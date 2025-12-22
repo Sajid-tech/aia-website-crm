@@ -27,6 +27,7 @@ import { login } from "@/constants/apiConstants";
 import { setCompanyDetails } from "@/store/auth/companySlice";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/store/auth/authSlice";
+import api from "@/api";
 
 const sliderImages = [
   {
@@ -53,7 +54,7 @@ export default function LoginAuth() {
   const [password, setPassword] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("");
   const navigate = useNavigate();
-  const { trigger: LoginPost, loading: isLoading } = useApiMutation();
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const emailInputRef = useRef(null);
@@ -87,7 +88,6 @@ export default function LoginAuth() {
     };
   }, [isLoading]);
 
-  // Fix for form submission with Enter key
   const handleKeyPress = (event) => {
     if (event.key === "Enter" && !isLoading) {
       handleSubmit(event);
@@ -105,15 +105,12 @@ export default function LoginAuth() {
     const formData = new FormData();
     formData.append("username", email);
     formData.append("password", password);
-
+    setIsLoading(true);
     try {
-      const res = await LoginPost({
-        url: login.postLogin,
-        method: "post",
-        data: formData,
-      });
-      if (res.code == 200) {
-        const { UserInfo, version, year } = res;
+      const res = await api.auth.login(formData);
+
+      if (res?.data?.code === 200) {
+        const { UserInfo, version, year } = res?.data;
 
         if (!UserInfo || !UserInfo.token) {
           toast.error("Login Failed: No token received.");
@@ -134,9 +131,13 @@ export default function LoginAuth() {
         navigate("/home", { replace: true });
       } else {
         toast.error(res.message || "Login Failed: Unexpected response.");
+        setIsLoading(false);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 

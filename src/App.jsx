@@ -6,7 +6,8 @@ import AppRoutes from "./routes/app-routes";
 import useAppLogout from "./utils/logout";
 
 function App() {
-  const time = useSelector((state) => state.auth.tokenExpireAt * 60 * 1000);
+  const time = useSelector((state) => state.auth.tokenExpireAt);
+  console.log(time, "time");
   const handleLogout = useAppLogout();
 
   return (

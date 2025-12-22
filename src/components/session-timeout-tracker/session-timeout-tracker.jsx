@@ -31,7 +31,6 @@ const SessionTimeoutTracker = ({ expiryTime, onLogout }) => {
       if (isNaN(expiryDate.getTime())) {
         return null;
       }
-
       return expiryDate;
     } catch (error) {
       console.error("❌ Error parsing expiry time:", error);
@@ -101,7 +100,6 @@ const SessionTimeoutTracker = ({ expiryTime, onLogout }) => {
 
       const expiryDate = validateExpiryTime(expiryTime);
       if (!expiryDate) {
-      
         return { status: "valid", countdown: null };
       }
 

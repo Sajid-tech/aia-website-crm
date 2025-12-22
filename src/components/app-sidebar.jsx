@@ -355,7 +355,6 @@ const TEAMS_CONFIG = [
 export function AppSidebar({ ...props }) {
   const [openItem, setOpenItem] = useState(null);
   const user = useSelector((state) => state.auth.user);
-  console.log(user, "user");
   const { navMain, navMainReport } = useNavigationData(user?.user_type);
   const initialData = {
     user: {
@@ -367,7 +366,6 @@ export function AppSidebar({ ...props }) {
     navMain,
     navMainReport,
   };
-  console.log(initialData, "initialData");
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
