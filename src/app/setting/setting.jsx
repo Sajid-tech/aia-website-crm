@@ -4,8 +4,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Cookies from "js-cookie";
 import apiClient from "@/api/apiClient";
-import DocSetting from "@/components/settings/doc-setting";
-import ProfileSetting from "@/components/settings/profile-setting";
+
 
 const Settings = () => {
   const queryClient = useQueryClient();
@@ -162,14 +161,8 @@ const Settings = () => {
 
   return (
     <div className="p-2 max-w-6xl mx-auto ">
-      <Tabs defaultValue="profile" className="w-full mt-2">
-        <TabsList className="grid w-full grid-cols-2 mb-2">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="doc">HelpDesk</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="profile" className="space-y-2">
-          <ProfileSetting
+  
+          {/* <ProfileSetting
             user={user}
             editProfile={editProfile}
             setEditProfile={setEditProfile}
@@ -182,13 +175,9 @@ const Settings = () => {
             fileInputRef={fileInputRef}
             handleImageChange={handleImageChange}
             getUserImageUrl={getUserImageUrl}
-          />
-        </TabsContent>
-
-        <TabsContent value="doc">
-          <DocSetting />
-        </TabsContent>
-      </Tabs>
+          /> */}
+        
+      
     </div>
   );
 };

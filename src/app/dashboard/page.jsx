@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ChangePassword from "../auth/change-password";
 
-import ChapterSelection from "@/components/common/chapter-selection";
+
 import { Breadcrumbs } from "@/components/new/breadcrumbs";
 import Cookies from "js-cookie";
 
@@ -41,9 +41,7 @@ export default function Page({ children }) {
 
             <Breadcrumbs onBack={handleBackClick} />
           </div>
-          <div>
-            <ChapterSelection />
-          </div>
+        
         </header>
 
         <main className="flex flex-1 flex-col gap-4  pt-0 ">
