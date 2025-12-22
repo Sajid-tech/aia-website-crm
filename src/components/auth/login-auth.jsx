@@ -57,7 +57,6 @@ export default function LoginAuth() {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const emailInputRef = useRef(null);
-  console.log(login.postLogin, "login.postLogin");
   const loadingMessages = [
     "Setting things up for you...",
     "Checking your credentials...",
@@ -65,7 +64,6 @@ export default function LoginAuth() {
     "Almost there...",
   ];
 
-  // Auto-focus on email input
   useEffect(() => {
     if (emailInputRef.current) {
       emailInputRef.current.focus();
@@ -114,7 +112,6 @@ export default function LoginAuth() {
         method: "post",
         data: formData,
       });
-      console.log(res, "login response");
       if (res.code == 200) {
         const { UserInfo, version, year } = res;
 

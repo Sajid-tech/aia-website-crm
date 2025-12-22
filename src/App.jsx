@@ -1,16 +1,14 @@
-import { useNavigate } from "react-router-dom";
-import SessionTimeoutTracker from "./components/session-timeout-tracker/session-timeout-tracker";
+import { useSelector } from "react-redux";
 import { Toaster } from "sonner";
 import ScrollToTop from "./components/common/scroll-to-top";
+import SessionTimeoutTracker from "./components/session-timeout-tracker/session-timeout-tracker";
 import AppRoutes from "./routes/app-routes";
-import appLogout from "./utils/logout";
-import { useSelector } from "react-redux";
+import useAppLogout from "./utils/logout";
 
 function App() {
   const time = useSelector((state) => state.auth.tokenExpireAt * 60 * 1000);
-  const handleLogout = () => {
-    appLogout();
-  };
+  const handleLogout = useAppLogout();
+
   return (
     <>
       {/* <DisabledRightClick /> */}

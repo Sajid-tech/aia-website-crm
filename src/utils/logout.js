@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { logout } from "@/store/auth/authSlice";
 import { persistor } from "@/store/store";
 
-const appLogout = () => {
+const useAppLogout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -25,6 +25,7 @@ const appLogout = () => {
         "favorite_chapters",
         "recent_chapters",
       ];
+
       cookiesToRemove.forEach((cookie) => Cookies.remove(cookie));
 
       localStorage.clear();
@@ -33,11 +34,12 @@ const appLogout = () => {
 
       dispatch(logout());
 
-      navigate("/");
+      navigate("/", { replace: true });
 
-      setTimeout(() => persistor.purge(), 1000);
+      setTimeout(() => {
+        persistor.purge();
+      }, 500);
     } catch (error) {
-      // message.error(error?.response?.data?.message || "Logout Error");
       console.error("Logout failed:", error);
     }
   };
@@ -45,4 +47,4 @@ const appLogout = () => {
   return handleLogout;
 };
 
-export default appLogout;
+export default useAppLogout;

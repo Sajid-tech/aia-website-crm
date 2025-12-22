@@ -17,7 +17,6 @@ export default function Page({ children }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
-  const nameL = Cookies.get("name");
 
   const handleBackClick = (e) => {
     e.preventDefault();

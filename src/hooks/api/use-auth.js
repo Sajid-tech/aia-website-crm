@@ -1,29 +1,21 @@
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
 const useAuth = () => {
-  const [authData, setAuthData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const user = useSelector((state) => state.auth?.user ?? null);
-  const token = useSelector((state) => state.auth?.token ?? null);
+  const token = useSelector((state) => state.auth?.token);
+  const user = useSelector((state) => state.auth?.user);
 
   useEffect(() => {
-    if (token && user) {
-      const userData = {
-        id: user?.id ?? null,
-        name: user?.name ?? null,
-        userType: user?.user_type ?? null,
-        email: user?.email ?? null,
-      };
-      setAuthData({ user: userData });
-    } else {
-      setAuthData({ user: null });
-    }
     setIsLoading(false);
-  }, [token, user]); 
+  }, []);
 
-  return { data: authData, isLoading };
+  return {
+    isLoading,
+    isAuthenticated: Boolean(token),
+    user,
+  };
 };
 
 export default useAuth;

@@ -1,5 +1,5 @@
 import BASE_URL from "@/config/base-url";
-import appLogout from "@/utils/logout";
+import useAppLogout from "@/utils/logout";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -27,7 +27,7 @@ apiClient.interceptors.response.use(
     const status = error?.response?.status;
 
     if (status === 401) {
-      appLogout();
+      useAppLogout();
 
       window.location.replace("/");
     }

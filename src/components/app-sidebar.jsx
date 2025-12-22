@@ -22,6 +22,7 @@ import {
 import Cookies from "js-cookie";
 import { NavMainReport } from "./nav-main-report";
 import { useState, useMemo } from "react";
+import { useSelector } from "react-redux";
 
 const NAVIGATION_CONFIG = {
   COMMON: {
@@ -352,24 +353,21 @@ const TEAMS_CONFIG = [
 ];
 
 export function AppSidebar({ ...props }) {
-  const nameL = Cookies.get("name");
-  const emailL = Cookies.get("email");
-  const userType = Cookies.get("user_type_id") || "1";
   const [openItem, setOpenItem] = useState(null);
-
-  const { navMain, navMainReport } = useNavigationData(userType);
-
+  const user = useSelector((state) => state.auth.user);
+  console.log(user, "user");
+  const { navMain, navMainReport } = useNavigationData(user?.user_type);
   const initialData = {
     user: {
-      name: nameL || "User",
-      email: emailL || "user@example.com",
+      name: user?.name || "User",
+      email: user?.email || "user@example.com",
       avatar: "/avatars/shadcn.jpg",
     },
     teams: TEAMS_CONFIG,
     navMain,
     navMainReport,
   };
-
+  console.log(initialData, "initialData");
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

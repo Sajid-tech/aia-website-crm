@@ -16,8 +16,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toggleSidebar as toggleSidebarAction } from "@/store/ui/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-const SIDEBAR_COOKIE_NAME = "sidebar:state";
+// const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
@@ -51,29 +53,43 @@ const SidebarProvider = React.forwardRef(
     const [openMobile, setOpenMobile] = React.useState(false);
 
     // Retrieve the sidebar state from localStorage on initial load
-    const [initialOpen] = React.useState(() => {
-      const storedState = localStorage.getItem(SIDEBAR_COOKIE_NAME);
-      return storedState ? JSON.parse(storedState) : defaultOpen;
-    });
+    // const [initialOpen] = React.useState(() => {
+    //   const storedState = localStorage.getItem(SIDEBAR_COOKIE_NAME);
+    //   return storedState ? JSON.parse(storedState) : defaultOpen;
+    // });
 
     // This is the internal state of the sidebar.
-    const [_open, _setOpen] = React.useState(initialOpen);
-    const open = openProp ?? _open;
+    // const [_open, _setOpen] = React.useState(initialOpen);
+    const sidebarOpen = useSelector((state) => state.ui.sidebarOpen);
+    const open = openProp ?? sidebarOpen;
+    const dispatch = useDispatch();
 
+    // const setOpen = React.useCallback(
+    //   (value) => {
+    //     const newOpen = typeof value == "function" ? value(open) : value;
+
+    //     if (setOpenProp) {
+    //       setOpenProp(newOpen);
+    //     } else {
+    //       _setOpen(newOpen);
+    //     }
+
+    //     // Store the sidebar state in localStorage
+    //     localStorage.setItem(SIDEBAR_COOKIE_NAME, JSON.stringify(newOpen));
+    //   },
+    //   [setOpenProp, open]
+    // );
     const setOpen = React.useCallback(
       (value) => {
-        const newOpen = typeof value == "function" ? value(open) : value;
+        const newOpen = typeof value === "function" ? value(open) : value;
 
         if (setOpenProp) {
           setOpenProp(newOpen);
         } else {
-          _setOpen(newOpen);
+          dispatch(toggleSidebarAction());
         }
-
-        // Store the sidebar state in localStorage
-        localStorage.setItem(SIDEBAR_COOKIE_NAME, JSON.stringify(newOpen));
       },
-      [setOpenProp, open]
+      [dispatch, open, setOpenProp]
     );
 
     // Helper to toggle the sidebar.
