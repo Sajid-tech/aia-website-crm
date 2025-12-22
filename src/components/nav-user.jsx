@@ -4,25 +4,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ContextPanel } from "@/lib/context-panel";
 import { cn } from "@/lib/utils";
 import { default as appLogout, default as useAppLogout } from "@/utils/logout";
 import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import Cookies from "js-cookie";
 import { Activity, Download, LogOut } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import Logout from "./auth/log-out";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { useDispatch, useSelector } from "react-redux";
 
 export function NavUser({ user }) {
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
-  const dispatch = useDispatch();
 
   const sidebarOpen = useSelector((state) => state.ui.sidebarOpen);
 
@@ -50,11 +46,14 @@ export function NavUser({ user }) {
   // }, []);
 
   // -------------------------- upgrade start -------------------
-  const { isPanelUp } = useContext(ContextPanel);
-  const [showUpdateBadge, setShowUpdateBadge] = useState(false);
+  const showUpdateBadge = useSelector(
+    (state) => state.version?.showUpdateDialog
+  );
+  // const showUpdateBadge = true;
   const [openDialog, setOpenDialog] = useState(false);
   const [showDot, setShowDot] = useState(false);
-
+  const verCon = useSelector((state) => state.version.version);
+  const localVersion = useSelector((state) => state.auth?.version);
   const updateMutation = useMutation({
     mutationFn: async () => Promise.resolve(),
     onSuccess: () => {
@@ -67,12 +66,9 @@ export function NavUser({ user }) {
       toast.error("Update failed. Please try again.");
     },
   });
-
   useEffect(() => {
-    const verCon = Cookies.get("ver_con");
-    if (verCon && isPanelUp?.version?.version_panel) {
-      if (verCon !== isPanelUp.version.version_panel) {
-        setShowUpdateBadge(true);
+    if (verCon && localVersion) {
+      if (verCon !== localVersion) {
         setShowDot(true);
         const dotTimer = setTimeout(() => {
           setShowDot(false);
@@ -81,7 +77,7 @@ export function NavUser({ user }) {
         return () => clearTimeout(dotTimer);
       }
     }
-  }, [isPanelUp]);
+  }, [localVersion, verCon]);
 
   const handleUpdate = () => updateMutation.mutate();
   // -------------------------- upgrade end ---------------------
@@ -144,8 +140,7 @@ export function NavUser({ user }) {
                     </div>
                   </div>
                   <div className="text-[12px] text-white/80 mt-0.5">
-                    v{Cookies.get("ver_con")} → v
-                    {isPanelUp?.version?.version_panel}
+                    v{localVersion} → v{verCon}
                   </div>
                 </div>
               ) : (
@@ -176,7 +171,7 @@ export function NavUser({ user }) {
                   Update Available
                 </DialogTitle>
                 <p className="text-xs text-muted-foreground">
-                  Version v{isPanelUp?.version?.version_panel}
+                  Version v{verCon}
                 </p>
               </div>
             </div>
