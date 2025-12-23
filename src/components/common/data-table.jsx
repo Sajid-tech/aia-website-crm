@@ -17,7 +17,14 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Search, SquarePlus } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 const DataTable = ({
   data = [],
@@ -25,6 +32,7 @@ const DataTable = ({
   pageSize = 10,
   searchPlaceholder = "Search...",
   extraContent,
+  addButton,
 }) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState({
@@ -49,22 +57,67 @@ const DataTable = ({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-2">
+      <div className="flex items-center justify-between py-1">
         <div className="relative w-64">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
           <Input
             value={globalFilter ?? ""}
             onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder={searchPlaceholder}
-            className="pl-8 h-9"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setGlobalFilter("");
+              }
+            }}
+            className="pl-8 h-9 text-sm bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
           />
         </div>
-
-        {extraContent && (
-          <div className="flex items-center gap-2">{extraContent}</div>
-        )}
+        <div className="flex flex-col md:flex-row md:ml-auto gap-2 w-full md:w-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-9">
+                Columns <ChevronDown className="ml-2 h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+         
+                  const columnDef = columns.find(col => 
+                    col.accessorKey === column.id || col.id === column.id
+                  );
+                  
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="text-xs capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    >
+       
+                      {columnDef?.header || column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+   
+          {addButton && (
+            <Link to={addButton.to}>
+              <Button variant="default" size="sm" className="h-9">
+                <SquarePlus className="h-3 w-3 mr-2" /> {addButton.label}
+              </Button>
+            </Link>
+          )}
+          
+  
+          {extraContent}
+        </div>
       </div>
-
+     
       <div className="rounded-none border min-h-[31rem] grid grid-cols-1">
         <Table>
           <TableHeader>

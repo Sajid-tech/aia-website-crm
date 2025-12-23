@@ -66,6 +66,7 @@ const PopupList = () => {
         columns={columns}
         pageSize={10}
         searchPlaceholder="Search popups..."
+      
       />
     </>
   );
