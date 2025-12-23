@@ -58,7 +58,7 @@ const DataTable = ({
         />
       </div>
 
-      <div className="border rounded">
+      <div className="rounded-none border min-h-[31rem] grid grid-cols-1">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
