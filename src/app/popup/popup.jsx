@@ -62,18 +62,18 @@ const PopupList = () => {
       ),
     },
   ];
-
+  if (isError) {
+    return <ApiErrorPage onRetry={() => refetch()} />;
+  }
   return (
     <>
       {isLoading && <LoadingBar />}
-      {isError && <ApiErrorPage onRetry={refetch} />}
 
       <DataTable
         data={data?.data || []}
         columns={columns}
         pageSize={10}
         searchPlaceholder="Search popups..."
-      
       />
 
       <PopupEdit
@@ -82,6 +82,7 @@ const PopupList = () => {
         popupId={selectedPopupId}
         imageBaseUrl={popupBaseUrl}
         noImageUrl={noImageUrl}
+        refetch={refetch}
       />
     </>
   );
