@@ -42,10 +42,6 @@ const CompanyList = () => {
       },
     },
     {
-      header: "ID",
-      accessorKey: "id",
-    },
-    {
       header: "Company Name",
       accessorKey: "student_company_name",
     },

@@ -123,7 +123,7 @@ export default function LoginAuth() {
         );
         dispatch(setCompanyDetails(res.company_details));
 
-        navigate("/home", { replace: true });
+        navigate("/popup-list", { replace: true });
       } else {
         toast.error(res.message || "Login Failed: Unexpected response.");
         setIsLoading(false);

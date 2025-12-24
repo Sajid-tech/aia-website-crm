@@ -48,10 +48,6 @@ const BannerList = () => {
       },
     },
     {
-      header: "ID",
-      accessorKey: "id",
-    },
-    {
       header: "Sort Order",
       accessorKey: "banner_sort",
     },

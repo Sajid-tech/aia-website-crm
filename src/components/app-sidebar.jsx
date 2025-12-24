@@ -1,14 +1,3 @@
-import {
-  AudioWaveform,
-  Blocks,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Package,
-  Settings2,
-  ShoppingBag,
-} from "lucide-react";
-
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
@@ -19,72 +8,89 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import Cookies from "js-cookie";
-import { NavMainReport } from "./nav-main-report";
-import { useState, useMemo } from "react";
+import {
+  AudioWaveform,
+  Blocks,
+  BookOpen,
+  Building2,
+  Command,
+  Frame,
+  GalleryVerticalEnd,
+  Globe,
+  HelpCircle,
+  Image,
+  LayoutGrid,
+  Mail,
+  Package,
+  Settings,
+  Settings2,
+  ShoppingBag,
+  Users,
+  Youtube,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 
 const NAVIGATION_CONFIG = {
   COMMON: {
-    DASHBOARD: {
-      title: "Dashboard",
-      url: "/home",
-      icon: Frame,
-      isActive: false,
-    },
     POPUPLIST: {
-      title: "PopUpList",
+      title: "PopUp List",
       url: "/popup-list",
-      icon: Frame,
+      icon: LayoutGrid,
       isActive: false,
     },
     BANNERLIST: {
       title: "Banner",
       url: "/banner-list",
-      icon: Frame,
+      icon: Image,
       isActive: false,
     },
     COMPANYLIST: {
       title: "Company",
       url: "/company-list",
-      icon: Frame,
+      icon: Building2,
       isActive: false,
     },
     COUNTRYLIST: {
       title: "Country List",
       url: "/country-list",
-      icon: Frame,
+      icon: Globe,
       isActive: false,
     },
     NEWSLETTERLIST: {
-      title: "NewsLetter List",
-      url: "/new-letter-list",
-      icon: Frame,
+      title: "Newsletter List",
+      url: "/newsletter-list",
+      icon: Mail,
       isActive: false,
     },
-    LETUREYOUTUBELIST: {
-      title: "Leture Youtube",
+    LECTUREYOUTUBELIST: {
+      title: "Lecture Youtube",
       url: "/lecture-youtube",
-      icon: Frame,
+      icon: Youtube,
       isActive: false,
     },
     STUDENTLIST: {
       title: "Student List",
       url: "/student-list",
-      icon: Frame,
+      icon: Users,
       isActive: false,
     },
-
     FAQLIST: {
       title: "FAQ",
       url: "/faq-list",
-      icon: Frame,
+      icon: HelpCircle,
       isActive: false,
     },
     BLOGLIST: {
       title: "Blog",
       url: "/blog-list",
-      icon: Frame,
+      icon: BookOpen,
+      isActive: false,
+    },
+    SETTINGS: {
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
       isActive: false,
     },
     GALLERYLIST: {
@@ -318,31 +324,27 @@ const USER_ROLE_PERMISSIONS = {
       "FAQLIST",
       "GALLERYLIST",
       "BLOGLIST",
-    ],
-    navMainReport: [
-     
-      "POPUPLIST",
-      
-      "LETUREYOUTUBELIST",
-      "NEWSLETTERLIST",
-      "STUDENTLIST",
-      
       "SETTINGS",
-      "FAQLIST",
-     
-      "BLOGLIST",
     ],
+    navMainReport: ["SUMMARY", "DOWNLOADS", "OTHER", "SETTINGS"],
   },
 
   2: {
     navMain: [
       "DASHBOARD",
       "POPUPLIST",
-      "CHAPTER",
+      "BANNERLIST",
+      "COMPANYLIST",
+      "COUNTRYLIST",
+      "LETUREYOUTUBELIST",
+      "STUDENTLIST",
+      "NEWSLETTERLIST",
       "MEMBERSHIP",
       "DONOR",
       "RECEIPT",
       "SCHOOL",
+      "FAQLIST",
+      "BLOGLIST",
     ],
     navMainReport: ["SUMMARY", "DOWNLOADS", "OTHER", "SETTINGS"],
   },
@@ -351,31 +353,53 @@ const USER_ROLE_PERMISSIONS = {
     navMain: [
       "DASHBOARD",
       "POPUPLIST",
-      "MASTER_SETTINGS",
+      "BANNERLIST",
+      "COMPANYLIST",
+      "COUNTRYLIST",
+      "LETUREYOUTUBELIST",
+      "STUDENTLIST",
+      "NEWSLETTERLIST",
       "MEMBERSHIP",
       "DONOR",
       "RECEIPT",
       "SCHOOL",
+      "FAQLIST",
+      "BLOGLIST",
     ],
     navMainReport: ["SUMMARY", "DOWNLOADS", "OTHER", "SETTINGS"],
   },
 
   4: {
-    navMain: ["DASHBOARD", "MEMBERSHIP", "DONOR", "RECEIPT", "SCHOOL"],
+    navMain: [
+      "DASHBOARD",
+      "POPUPLIST",
+      "BANNERLIST",
+      "COMPANYLIST",
+      "COUNTRYLIST",
+      "LETUREYOUTUBELIST",
+      "STUDENTLIST",
+      "NEWSLETTERLIST",
+      "MEMBERSHIP",
+      "DONOR",
+      "RECEIPT",
+      "SCHOOL",
+      "FAQLIST",
+      "BLOGLIST",
+    ],
     navMainReport: ["SUMMARY", "DOWNLOADS", "OTHER", "SETTINGS"],
   },
 
-  5: {
-    navMain: ["DASHBOARD", "CHAPTER"],
-    navMainReport: [
-      "SETTINGS",
-      "RECEIPT_ZERO",
-      "RECEIPT_CHANGE_DONOR",
-      "RECEIPT_MULTIPLE",
-      "FOLDER",
-      "MULTIALLOTMENT",
-    ],
-  },
+  // 5: {
+  //   navMain: ["DASHBOARD", "CHAPTER"],
+  //   navMainReport: [
+  //     "SETTINGS",
+  //     "RECEIPT_ZERO",
+  //     "RECEIPT_CHANGE_DONOR",
+  //     "RECEIPT_MULTIPLE",
+  //     "FOLDER",
+  //     "MULTIALLOTMENT",
+  //   ],
+  // },
 };
 
 const LIMITED_MASTER_SETTINGS = {
@@ -409,16 +433,17 @@ const useNavigationData = (userType) => {
 
     const navMain = buildNavItems(
       permissions.navMain,
-      { ...NAVIGATION_CONFIG.COMMON, ...NAVIGATION_CONFIG.MODULES },
-      { MASTER_SETTINGS_LIMITED: LIMITED_MASTER_SETTINGS }
+      // { ...NAVIGATION_CONFIG.COMMON, ...NAVIGATION_CONFIG.MODULES },
+      { ...NAVIGATION_CONFIG.COMMON }
+      // { MASTER_SETTINGS_LIMITED: LIMITED_MASTER_SETTINGS }
     );
 
-    const navMainReport = buildNavItems(
-      permissions.navMainReport,
-      NAVIGATION_CONFIG.REPORTS
-    );
+    // const navMainReport = buildNavItems(
+    //   permissions.navMainReport,
+    //   NAVIGATION_CONFIG.REPORTS
+    // );
 
-    return { navMain, navMainReport };
+    return { navMain };
   }, [userType]);
 };
 
@@ -465,11 +490,11 @@ export function AppSidebar({ ...props }) {
           openItem={openItem}
           setOpenItem={setOpenItem}
         />
-        <NavMainReport
+        {/* <NavMainReport
           items={initialData.navMainReport}
           openItem={openItem}
           setOpenItem={setOpenItem}
-        />
+        /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={initialData.user} />

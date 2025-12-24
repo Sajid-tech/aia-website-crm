@@ -70,11 +70,33 @@ const StudentList = () => {
         );
       },
     },
-    { header: "UID", accessorKey: "student_uid" },
     { header: "Sort", accessorKey: "student_sort" },
+        { header: "UID", accessorKey: "student_uid" },
+
     { header: "Name", accessorKey: "student_name" },
     { header: "Course", accessorKey: "student_course" },
     { header: "Designation", accessorKey: "student_designation" },
+    {
+      header: "Status",
+      accessorKey: "student_status",
+      cell: ({ row }) => {
+        const status = row.original.student_status;
+        const isActive = status === "Active";
+
+        return (
+          <span
+            className={`px-3 py-1 text-xs font-medium rounded-full inline-block
+              ${
+                isActive
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+          >
+            {status}
+          </span>
+        );
+      },
+    },
     {
       header: "Action",
       cell: ({ row }) => (

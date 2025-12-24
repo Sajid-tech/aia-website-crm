@@ -20,10 +20,6 @@ const FaqList = () => {
 
   const columns = [
     {
-      header: "ID",
-      accessorKey: "id",
-    },
-    {
       header: "Sort Order",
       accessorKey: "faq_sort",
     },

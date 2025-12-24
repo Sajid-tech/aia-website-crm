@@ -48,6 +48,7 @@ const initialState = {
   student_certificate_image: null,
   student_certificate_image_alt: "",
   student_youtube_image: null,
+  student_status: "Active",
   student_youtube_image_alt: "",
 };
 
@@ -210,6 +211,7 @@ const StudentForm = () => {
     formData.append("student_linkedin_link", data.student_linkedin_link || "");
     formData.append("student_youtube_link", data.student_youtube_link || "");
     formData.append("student_image_alt", data.student_image_alt || "");
+    formData.append("student_status", data.student_status || "");
     formData.append(
       "student_office_image_alt",
       data.student_office_image_alt || ""
@@ -279,7 +281,11 @@ const StudentForm = () => {
           description="Fill in the student details below to register them"
           rightContent={
             <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" type="button" onClick={() => navigate(-1)}>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => navigate(-1)}
+              >
                 Back
               </Button>
               <Button type="submit" disabled={submitLoading}>
@@ -470,6 +476,23 @@ const StudentForm = () => {
               </SelectContent>
             </Select>
           </div>
+          {isEditMode && (
+            <div>
+              <label className="text-sm font-medium">Status</label>
+              <Select
+                value={data.student_status}
+                onValueChange={(v) => setData({ ...data, student_status: v })}
+              >
+                <SelectTrigger >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4   gap-4">
           <div className="col-span-2">

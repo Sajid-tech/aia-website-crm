@@ -1,10 +1,9 @@
-import PageHeader from "@/components/common/page-header";
 import LoadingBar from "@/components/loader/loading-bar";
 import { Input } from "@/components/ui/input";
 import { NEWSLETTER_API } from "@/constants/apiConstants";
 import { useGetApiMutation } from "@/hooks/useGetApiMutation";
 import { motion } from "framer-motion";
-import { Calendar, Mail, Search, Users } from "lucide-react";
+import { Calendar, Mail, Search } from "lucide-react";
 import moment from "moment";
 import { useMemo, useState } from "react";
 
@@ -50,15 +49,6 @@ const NewsLetter = () => {
     },
   };
 
-  const statVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.3, ease: "easeOut" },
-    },
-  };
-
   return (
     <>
       {isLoading && <LoadingBar />}
@@ -75,73 +65,6 @@ const NewsLetter = () => {
             <p className="text-gray-600 mt-2">
               Manage and view all newsletter subscribers
             </p>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8"
-          >
-            <motion.div
-              variants={statVariants}
-              className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-5"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-blue-700 font-medium">
-                    Total Subscribers
-                  </p>
-                  <p className="text-3xl font-bold text-blue-900 mt-2">
-                    {newsletters.length}
-                  </p>
-                </div>
-                <div className="p-3 bg-blue-200 rounded-lg">
-                  <Users className="h-6 w-6 text-blue-700" />
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={statVariants}
-              className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-5"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-green-700 font-medium">
-                    Found Results
-                  </p>
-                  <p className="text-3xl font-bold text-green-900 mt-2">
-                    {filteredNewsletters.length}
-                  </p>
-                </div>
-                <div className="p-3 bg-green-200 rounded-lg">
-                  <Search className="h-6 w-6 text-green-700" />
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={statVariants}
-              className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-5"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-purple-700 font-medium">
-                    Last Updated
-                  </p>
-                  <p className="text-lg font-bold text-purple-900 mt-2">
-                    {newsletters?.[0]?.newsletter_created
-                      ? moment(newsletters[0].newsletter_created).fromNow()
-                      : "No Data"}
-                  </p>
-                </div>
-                <div className="p-3 bg-purple-200 rounded-lg">
-                  <Calendar className="h-6 w-6 text-purple-700" />
-                </div>
-              </div>
-            </motion.div>
           </motion.div>
 
           <motion.div

@@ -1,35 +1,35 @@
+import Login from "@/app/auth/login";
+import BannerList from "@/app/banner/banner-list";
+import CreateBanner from "@/app/banner/create-banner";
+import EditBanner from "@/app/banner/edit-banner";
+import BlogList from "@/app/blog/blog-list";
+import CreateBlog from "@/app/blog/create-blog";
+import CompanyList from "@/app/company/company-list";
+import CreateCompany from "@/app/company/create-company";
+import EditCompany from "@/app/company/edit-company";
+import CountryList from "@/app/country/country";
+import NotFound from "@/app/errors/not-found";
+import CreateFaq from "@/app/faq/create-faq";
+import EditFaq from "@/app/faq/edit-faq";
+import FaqList from "@/app/faq/faq-list";
+import Home from "@/app/home/home";
+import LectureYoutubeForm from "@/app/lecture-youtube/lecture-youtube-form";
+import LetureYoutubeList from "@/app/lecture-youtube/lecture-youtube-list";
+import NewsLetter from "@/app/newsletter/news-letter";
+import PopupList from "@/app/popup/popup";
+import Settings from "@/app/setting/setting";
+import StudentForm from "@/app/student/student-form";
+import StudentList from "@/app/student/student-list";
 import Maintenance from "@/components/common/maintenance";
+import ErrorBoundary from "@/components/error-boundry/error-boundry";
+import ForgotPassword from "@/components/forgot-password/forgot-password";
 import LoadingBar from "@/components/loader/loading-bar";
 import { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import AuthRoute from "./auth-route";
-import Login from "@/app/auth/login";
-import ForgotPassword from "@/components/forgot-password/forgot-password";
-import Home from "@/app/home/home";
-import ProtectedRoute from "./protected-route";
-import NotFound from "@/app/errors/not-found";
-import PopupList from "@/app/popup/popup";
-import ErrorBoundary from "@/components/error-boundry/error-boundry";
-import BannerList from "@/app/banner/banner-list";
-import CompanyList from "@/app/company/company-list";
-import CountryList from "@/app/country/country";
-import LetureYoutubeList from "@/app/lecture-youtube/lecture-youtube-list";
-import LectureYoutubeForm from "@/app/lecture-youtube/lecture-youtube-form";
-import StudentList from "@/app/student/student-list";
-import StudentForm from "@/app/student/student-form";
-import CreateBanner from "@/app/banner/create-banner";
-import CreateCompany from "@/app/company/create-company";
-import EditCompany from "@/app/company/edit-company";
-import EditBanner from "@/app/banner/edit-banner";
-import FaqList from "@/app/faq/faq-list";
-import CreateFaq from "@/app/faq/create-faq";
-import EditFaq from "@/app/faq/edit-faq";
-import Settings from "@/app/setting/setting";
-import BlogList from "@/app/blog/blog-list";
-import CreateBlog from "@/app/blog/create-blog";
-import NewsLetter from "@/app/newsletter/news-letter";
 import EditBlog from "../app/blog/edit-blog";
 import GalleryList from "@/app/gallery/gallery-list";
+import AuthRoute from "./auth-route";
+import ProtectedRoute from "./protected-route";
 
 function AppRoutes() {
   return (
@@ -50,7 +50,7 @@ function AppRoutes() {
 
         <Route path="/" element={<ProtectedRoute />}>
           <Route
-            path="/new-letter-list"
+            path="/newsletter-list"
             element={
               <Suspense fallback={<LoadingBar />}>
                 <NewsLetter />
@@ -113,14 +113,7 @@ function AppRoutes() {
               </Suspense>
             }
           />
-          <Route
-            path="/home"
-            element={
-              <Suspense fallback={<LoadingBar />}>
-                <Home />
-              </Suspense>
-            }
-          />
+
           <Route
             path="/popup-list"
             element={
