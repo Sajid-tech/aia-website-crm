@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import PageHeader from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Upload, X, User, ArrowLeft } from "lucide-react";
-import { useApiMutation } from "@/hooks/useApiMutation";
-import { useGetApiMutation } from "@/hooks/useGetApiMutation";
-import { toast } from "sonner";
-import { useNavigate, useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
-import { COMPANY_API } from "@/constants/apiConstants";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { COMPANY_API } from "@/constants/apiConstants";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { useGetApiMutation } from "@/hooks/useGetApiMutation";
+import { useQueryClient } from "@tanstack/react-query";
+import { Building2, Loader2, Upload, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 const EditCompany = () => {
   const { id } = useParams();
@@ -235,42 +236,42 @@ const EditCompany = () => {
 
   return (
     <div className="max-w-full mx-auto">
-      <Card>
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-5 h-5 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-              <User className="text-muted-foreground w-5 h-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div>
-                  <h1 className="text-md font-semibold text-gray-900">
-                    Edit Company
-                  </h1>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Update the details below to edit the company
-                  </p>
-                </div>
-              </div>
-            </div>
+      <PageHeader
+        icon={Building2}
+        title="Edit Company"
+        description="Update the details below to edit the company"
+        rightContent={
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => navigate(-1)}
+            >
+              Back
+            </Button>
+            <Button
+              type="submit"
+              form="edit-company-form"
+              className="px-8"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                "Update Company"
+              )}
+            </Button>
           </div>
-
-          <Button
-            onClick={() => navigate("/company-list")}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1 flex-shrink-0 mt-2 sm:mt-0"
-          >
-            <ArrowLeft className="w-3 h-3" />
-            Back
-          </Button>
-        </div>
-      </Card>
-
+        }
+      />
       <Card className="mt-2">
         <CardContent className="p-4">
           <form
             onSubmit={handleSubmit}
+            id="edit-company-form"
             className="grid grid-cols-1 md:grid-cols-2 gap-2"
           >
             <div className="space-y-2">
@@ -434,51 +435,6 @@ const EditCompany = () => {
                   {errors.student_company_image}
                 </p>
               )}
-            </div>
-
-            <div className="pt-4 flex gap-3 col-span-2">
-              <Button type="submit" className="px-8" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Updating...
-                  </>
-                ) : (
-                  "Update Company"
-                )}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  const data = companyData?.data;
-                  setFormData({
-                    student_company_name: data?.student_company_name || "",
-                    student_company_image_alt:
-                      data?.student_company_image_alt || "",
-                    student_company_status:
-                      data?.student_company_status || "Active",
-                  });
-                  setSelectedFile(null);
-                  setPreviewImage(existingImage);
-                  setErrors({});
-                  const fileInput = document.getElementById(
-                    "student_company_image"
-                  );
-                  if (fileInput) fileInput.value = "";
-                }}
-              >
-                Reset Changes
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate("/company-list")}
-              >
-                Cancel
-              </Button>
             </div>
           </form>
         </CardContent>

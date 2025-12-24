@@ -1,21 +1,16 @@
-import React, { useState } from "react";
+import PageHeader from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Loader2, Upload, X, User, ArrowLeft } from "lucide-react";
-import { useApiMutation } from "@/hooks/useApiMutation";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
-import { COMPANY_API } from "@/constants/apiConstants";
 import { Textarea } from "@/components/ui/textarea";
+import { COMPANY_API } from "@/constants/apiConstants";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { useQueryClient } from "@tanstack/react-query";
+import { Building2, Loader2, Upload, X } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const CreateCompany = () => {
   const { trigger, loading: isSubmitting } = useApiMutation();
@@ -66,15 +61,6 @@ const CreateCompany = () => {
 
     setErrors(newErrors);
     return isValid;
-  };
-
-  const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
   };
 
   const handleImageChange = (e) => {
@@ -180,42 +166,43 @@ const CreateCompany = () => {
 
   return (
     <div className="max-w-full mx-auto">
-      <Card>
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-5 h-5 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-              <User className="text-muted-foreground w-5 h-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div>
-                  <h1 className="text-md font-semibold text-gray-900">
-                    Add New Company
-                  </h1>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Fill in the details below to create a new company
-                  </p>
-                </div>
-              </div>
-            </div>
+      <PageHeader
+        icon={Building2}
+        title="Add New Company"
+        description="Fill in the details below to create a new company"
+        rightContent={
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => navigate(-1)}
+            >
+              Back
+            </Button>
+
+            <Button
+              type="submit"
+              form="create-company-form"
+              className="px-8"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create Company"
+              )}
+            </Button>
           </div>
-
-          <Button
-            onClick={() => navigate("/company-list")}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1 flex-shrink-0 mt-2 sm:mt-0"
-          >
-            <ArrowLeft className="w-3 h-3" />
-            Back
-          </Button>
-        </div>
-      </Card>
-
+        }
+      />
       <Card className="mt-2">
         <CardContent className="p-4">
           <form
             onSubmit={handleSubmit}
+            id="create-company-form"
             className="grid grid-cols-1 md:grid-cols-2 gap-2"
           >
             <div className="space-y-2">
@@ -340,39 +327,6 @@ const CreateCompany = () => {
                   {errors.student_company_image}
                 </p>
               )}
-            </div>
-
-            <div className="pt-4 flex gap-3 col-span-2">
-              <Button type="submit" className="px-8" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  "Create Company"
-                )}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setFormData({
-                    student_company_name: "",
-                    student_company_image_alt: "",
-                  });
-                  setSelectedFile(null);
-                  setPreviewImage(null);
-                  setErrors({});
-                  const fileInput = document.getElementById(
-                    "student_company_image"
-                  );
-                  if (fileInput) fileInput.value = "";
-                }}
-              >
-                Reset Form
-              </Button>
             </div>
           </form>
         </CardContent>

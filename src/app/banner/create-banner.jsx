@@ -1,3 +1,4 @@
+import PageHeader from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { BANNER_API } from "@/constants/apiConstants";
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Loader2, Upload, User, X } from "lucide-react";
+import { ArrowLeft, Image, Loader2, Upload, User, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -61,9 +62,6 @@ const CreateBanner = () => {
 
     if (!formData.banner_image_alt.trim()) {
       newErrors.banner_image_alt = "Alt text is required";
-      isValid = false;
-    } else if (formData.banner_image_alt.length > 100) {
-      newErrors.banner_image_alt = "Alt text must be less than 100 characters";
       isValid = false;
     }
 
@@ -192,40 +190,41 @@ const CreateBanner = () => {
 
   return (
     <div className="max-w-full mx-auto  ">
-      <Card>
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-5 h-5 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-              <User className="text-muted-foreground w-5 h-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div>
-                  <h1 className="text-md font-semibold text-gray-900">
-                    Add New Banner
-                  </h1>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Fill in the details below to create a new banner
-                  </p>
-                </div>
-              </div>
-            </div>
+      <PageHeader
+        icon={Image}
+        title="Add New Banner"
+        description="Fill in the details below to create a new banner"
+        rightContent={
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => navigate(-1)}
+            >
+              Back
+            </Button>
+            <Button
+              type="submit"
+              form="create-banner-form"
+              className="px-8"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create Banner"
+              )}
+            </Button>
           </div>
-
-          <Button
-            onClick={() => navigate("/banner-list")}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1 flex-shrink-0 mt-2 sm:mt-0"
-          >
-            <ArrowLeft className="w-3 h-3" />
-            Back
-          </Button>
-        </div>
-      </Card>
+        }
+      />
       <Card className="mt-2">
         <CardContent className="p-4">
           <form
+            id="create-banner-form"
             onSubmit={handleSubmit}
             className="grid grid-cols-1 md:grid-cols-2 gap-2"
           >
@@ -293,13 +292,9 @@ const CreateBanner = () => {
                 className={errors.banner_image_alt ? "border-red-500" : ""}
               />
               <div className="flex justify-between">
-                {errors.banner_image_alt ? (
+                {errors.banner_image_alt && (
                   <p className="text-sm text-red-500">
                     {errors.banner_image_alt}
-                  </p>
-                ) : (
-                  <p className="text-sm text-gray-500">
-                    {formData.banner_image_alt.length}/100 characters
                   </p>
                 )}
               </div>
@@ -371,40 +366,6 @@ const CreateBanner = () => {
                   {errors.banner_image}
                 </p>
               )}
-            </div>
-
-            {/* Submit Button */}
-            <div className="pt-4 flex gap-3">
-              <Button type="submit" className="px-8" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  "Create Banner"
-                )}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setFormData({
-                    banner_sort: "",
-                    banner_text: "",
-                    banner_link: "",
-                    banner_image_alt: "",
-                  });
-                  setSelectedFile(null);
-                  setPreviewImage(null);
-                  setErrors({});
-                  const fileInput = document.getElementById("banner_image");
-                  if (fileInput) fileInput.value = "";
-                }}
-              >
-                Reset Form
-              </Button>
             </div>
           </form>
         </CardContent>
