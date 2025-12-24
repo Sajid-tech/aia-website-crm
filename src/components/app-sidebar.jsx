@@ -87,6 +87,12 @@ const NAVIGATION_CONFIG = {
       icon: Frame,
       isActive: false,
     },
+    GALLERYLIST: {
+      title: "Gallery",
+      url: "/gallery-list",
+      icon: Frame,
+      isActive: false,
+    },
   },
 
   MODULES: {
@@ -310,6 +316,7 @@ const USER_ROLE_PERMISSIONS = {
       "NEWSLETTERLIST",
       
       "FAQLIST",
+      "GALLERYLIST",
       "BLOGLIST",
     ],
     navMainReport: [
@@ -322,6 +329,7 @@ const USER_ROLE_PERMISSIONS = {
       
       "SETTINGS",
       "FAQLIST",
+     
       "BLOGLIST",
     ],
   },

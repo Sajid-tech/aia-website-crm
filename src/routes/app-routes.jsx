@@ -29,6 +29,7 @@ import BlogList from "@/app/blog/blog-list";
 import CreateBlog from "@/app/blog/create-blog";
 import NewsLetter from "@/app/newsletter/news-letter";
 import EditBlog from "../app/blog/edit-blog";
+import GalleryList from "@/app/gallery/gallery-list";
 
 function AppRoutes() {
   return (
@@ -229,6 +230,14 @@ function AppRoutes() {
             element={
               <Suspense fallback={<LoadingBar />}>
                 <EditBlog />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/gallery-list"
+            element={
+              <Suspense fallback={<LoadingBar />}>
+                <GalleryList />
               </Suspense>
             }
           />
