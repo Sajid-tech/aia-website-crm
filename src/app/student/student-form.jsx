@@ -225,7 +225,10 @@ const StudentForm = () => {
       "student_have_certificate",
       data.student_have_certificate || ""
     );
-    formData.append("student_recent_passout", data.student_recent_passout || "");
+    formData.append(
+      "student_recent_passout",
+      data.student_recent_passout || ""
+    );
     formData.append("student_have_youtube", data.student_have_youtube || "");
     formData.append("student_testimonial", data.student_testimonial || "");
     formData.append("student_linkedin_link", data.student_linkedin_link || "");
@@ -431,7 +434,7 @@ const StudentForm = () => {
                 <SelectContent>
                   {countriesData?.data?.map((c) => (
                     <SelectItem key={c.id} value={c.id.toString()}>
-                      {c.country_name}
+                      {c.country_name}-{c.country_city}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -782,7 +785,7 @@ const StudentForm = () => {
                 </div>
                 <div className="col-span-2">
                   <label className="text-sm font-medium">
-                    Other Certificate Image Alt 
+                    Other Certificate Image Alt
                   </label>
                   <Textarea
                     placeholder="Describe the certificate image"
