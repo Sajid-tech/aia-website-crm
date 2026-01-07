@@ -241,15 +241,15 @@ const StudentForm = () => {
     );
     formData.append(
       "student_other_certificate_image_alt",
-      data.student_other_certificate_image_alt
+      data.student_other_certificate_image_alt || ""
     );
     formData.append(
       "student_certificate_image_alt",
-      data.student_certificate_image_alt
+      data.student_certificate_image_alt || ""
     );
     formData.append(
       "student_youtube_image_alt",
-      data.student_youtube_image_alt
+      data.student_youtube_image_alt || ""
     );
 
     if (data.student_image instanceof File)
@@ -778,9 +778,7 @@ const StudentForm = () => {
                     }
                     format="WEBP"
                     allowedExtensions={["webp"]}
-                    dimensions="310*220"
                     maxSize={5}
-                    requiredDimensions={[310, 220]}
                   />
                 </div>
                 <div className="col-span-2">
