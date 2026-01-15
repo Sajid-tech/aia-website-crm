@@ -1,94 +1,131 @@
 import ApiErrorPage from "@/components/api-error/api-error";
-import DataTable from "@/components/common/data-table";
-import ImageCell from "@/components/common/ImageCell";
 import LoadingBar from "@/components/loader/loading-bar";
-import { Button } from "@/components/ui/button";
-import { LETUREYOUTUBE_API } from "@/constants/apiConstants";
+import { Input } from "@/components/ui/input";
+import { NEWSLETTER_API } from "@/constants/apiConstants";
 import { useGetApiMutation } from "@/hooks/useGetApiMutation";
-import { getImageBaseUrl, getNoImageUrl } from "@/utils/imageUtils";
-import { Edit } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Calendar, Mail, Search } from "lucide-react";
+import moment from "moment";
+import { useMemo, useState } from "react";
 
-const LetureYoutubeList = () => {
-  const navigate = useNavigate();
-  const IMAGE_FOR = "Lecture Youtube";
+const NewsLetter = () => {
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data, isLoading, isError, refetch } = useGetApiMutation({
-    url: LETUREYOUTUBE_API.list,
-    queryKey: ["lecture-youtube-list"],
+    url: NEWSLETTER_API.list,
+    queryKey: ["news-letter-list"],
   });
-  const imageBaseUrl = getImageBaseUrl(data?.image_url, IMAGE_FOR);
-  const noImageUrl = getNoImageUrl(data?.image_url);
-  const columns = [
-    {
-      header: "Image",
-      accessorKey: "youtube_image",
-      cell: ({ row }) => {
-        const fileName = row.original.youtube_image;
-        const src = fileName ? `${imageBaseUrl}${fileName}` : noImageUrl;
 
-        return (
-          <ImageCell src={src} fallback={noImageUrl} alt="Youtube Image" />
-        );
-      },
-    },
+  const newsletters = data?.data ?? [];
 
-    { header: "Page", accessorKey: "page_one_name" },
-    { header: "Sort", accessorKey: "youtube_sort" },
-    { header: "Course", accessorKey: "youtube_course" },
-    {
-      header: "Status",
-      accessorKey: "youtube_status",
-      cell: ({ row }) => {
-        const status = row.original.youtube_status;
-        const isActive = status === "Active";
+  const filteredNewsletters = useMemo(() => {
+    if (!searchQuery.trim()) return newsletters;
+    const query = searchQuery.toLowerCase();
+    return newsletters.filter((item) =>
+      item.newsletter_email.toLowerCase().includes(query)
+    );
+  }, [searchQuery, newsletters]);
 
-        return (
-          <span
-            className={`px-3 py-1 text-xs font-medium rounded-full inline-block
-              ${
-                isActive
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-          >
-            {status}
-          </span>
-        );
-      },
-    },
-    {
-      header: "Action",
-      cell: ({ row }) => (
-        <Button
-          size="icon"
-          variant="outline"
-          onClick={() => navigate(`/youtube/${row.original.id}/edit`)}
-        >
-          <Edit className="h-4 w-4" />
-        </Button>
-      ),
-    },
-  ];
-  if (isError) {
-    return <ApiErrorPage onRetry={() => refetch()} />;
-  }
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    return moment(dateString).format("MMM DD, YYYY");
+  };
+
+  if (isError) return <ApiErrorPage onRetry={refetch} />;
+
   return (
     <>
       {isLoading && <LoadingBar />}
 
-      <DataTable
-        data={data?.data || []}
-        columns={columns}
-        pageSize={10}
-        searchPlaceholder="Search  youtube..."
-        addButton={{
-          to: "/youtube/create",
-          label: "Add  Youtube",
-        }}
-      />
+      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-8"
+          >
+            <h1 className="text-3xl font-bold text-gray-900">Newsletters</h1>
+            <p className="text-gray-600 mt-2">
+              Manage and view all newsletter subscribers
+            </p>
+          </motion.div>
+
+          {/* Search */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mb-8"
+          >
+            <div className="relative max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search newsletters by email..."
+                className="pl-12"
+              />
+            </div>
+          </motion.div>
+
+          {/* Content */}
+          {filteredNewsletters.length === 0 ? (
+            <div className="flex items-center justify-center h-64 bg-white rounded-xl border">
+              <div className="text-center">
+                <Mail className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-600 font-medium">
+                  No newsletters found
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {searchQuery ? "Try adjusting your search" : "No data yet"}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.1 },
+                },
+              }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+            >
+              {filteredNewsletters.map((item) => (
+                <motion.div
+                  key={item.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                  className="bg-white border rounded-xl p-4"
+                >
+                  <div className="flex justify-between mb-3">
+                    <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-1 rounded-full">
+                      #{item.id}
+                    </span>
+                    <div className="flex items-center gap-1 text-sm text-gray-600">
+                      <Calendar className="h-4 w-4" />
+                      {formatDate(item.newsletter_created)}
+                    </div>
+                  </div>
+
+                  <p className="text-sm font-medium text-gray-900 break-all">
+                    {item.newsletter_email}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      </div>
     </>
   );
 };
 
-export default LetureYoutubeList;
+export default NewsLetter;
