@@ -1,131 +1,1077 @@
-import ApiErrorPage from "@/components/api-error/api-error";
-import LoadingBar from "@/components/loader/loading-bar";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { NEWSLETTER_API } from "@/constants/apiConstants";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import LoadingBar from "@/components/loader/loading-bar";
+import { toast } from "sonner";
+import { useApiMutation } from "@/hooks/use-mutation";
 import { useGetApiMutation } from "@/hooks/useGetApiMutation";
-import { motion } from "framer-motion";
-import { Calendar, Mail, Search } from "lucide-react";
-import moment from "moment";
-import { useMemo, useState } from "react";
+import {
+  STUDENT_API,
+  COUNTRY_API,
+  COMPANY_API,
+  COURSE_API,
+} from "@/constants/apiConstants";
+import ApiErrorPage from "@/components/api-error/api-error";
+import { useQueryClient } from "@tanstack/react-query";
+import { Textarea } from "@/components/ui/textarea";
+import ImageUpload from "@/components/image-upload/image-upload";
+import { getImageBaseUrl, getNoImageUrl } from "@/utils/imageUtils";
+import PageHeader from "@/components/common/page-header";
+import { User } from "lucide-react";
+import { GroupButton } from "@/components/group-button";
+import { Card } from "@/components/ui/card";
+import CompanyDialog from "../company/create-company";
+import CountryForm from "../country/country-form";
+import { CKEditor } from "ckeditor4-react";
 
-const NewsLetter = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+const initialState = {
+  student_uid: "",
+  student_sort: "",
+  student_name: "",
+  student_course: "",
+  student_designation: "",
+  student_country_id: "",
+  student_company_id: "",
+  student_certificate_issued_by: "",
+  student_have_testimonial: "No",
+  student_have_certificate: "No",
+  student_have_youtube: "No",
+  student_recent_passout: "No",
+  student_have_office_image: "No",
+  student_have_story: "No",
+  student_story_date: "",
+  student_story_details: "",
+  student_testimonial: "",
+  student_linkedin_link: "",
+  student_youtube_link: "",
+  student_image: null,
+  student_image_alt: "",
+  student_office_image: null,
+  student_office_image_alt: "",
+  student_certificate_image: null,
+  student_certificate_image_alt: null,
+  student_other_certificate_image: null,
+  student_other_certificate_image_alt: "",
+  student_youtube_image: null,
+  student_status: "Active",
+  student_youtube_image_alt: "",
+};
 
-  const { data, isLoading, isError, refetch } = useGetApiMutation({
-    url: NEWSLETTER_API.list,
-    queryKey: ["news-letter-list"],
+const StudentForm = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isEditMode = Boolean(id);
+  const queryClient = useQueryClient();
+  const [openCompany, setCompanyOpen] = useState(false);
+  const [openCountry, setCountryOpen] = useState(false);
+
+  const [data, setData] = useState(initialState);
+  const [errors, setErrors] = useState({});
+  const [preview, setPreview] = useState({});
+
+  const {
+    trigger: fetchStudent,
+    loading: fetchLoading,
+    error: fetchError,
+  } = useApiMutation();
+  const { trigger: submitStudent, loading: submitLoading } = useApiMutation();
+
+  const { data: countriesData } = useGetApiMutation({
+    url: COUNTRY_API.dropdown,
+    queryKey: ["countries-dropdown"],
   });
 
-  const newsletters = data?.data ?? [];
+  const { data: companiesData } = useGetApiMutation({
+    url: COMPANY_API.dropdown,
+    queryKey: ["companies-dropdown"],
+  });
+  const { data: coursesData } = useGetApiMutation({
+    url: COURSE_API.courses,
+    queryKey: ["courses-dropdown"],
+  });
 
-  const filteredNewsletters = useMemo(() => {
-    if (!searchQuery.trim()) return newsletters;
-    const query = searchQuery.toLowerCase();
-    return newsletters.filter((item) =>
-      item.newsletter_email.toLowerCase().includes(query)
-    );
-  }, [searchQuery, newsletters]);
+  const fetchData = async () => {
+    try {
+      const res = await fetchStudent({ url: STUDENT_API.byId(id) });
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    return moment(dateString).format("MMM DD, YYYY");
+      const IMAGE_FOR = "Student";
+      const baseUrl = getImageBaseUrl(res?.image_url, IMAGE_FOR);
+      const noImageUrl = getNoImageUrl(res?.image_url);
+
+      setData({
+        ...res.data,
+        student_image: null,
+        student_office_image: null,
+        student_certificate_image: null,
+        student_other_certificate_image: null,
+        student_youtube_image: null,
+      });
+
+      setPreview({
+        student_image: res?.data?.student_image
+          ? `${baseUrl}${res.data.student_image}`
+          : noImageUrl,
+
+        student_office_image: res?.data?.student_office_image
+          ? `${baseUrl}${res.data.student_office_image}`
+          : noImageUrl,
+
+        student_other_certificate_image: res?.data
+          ?.student_other_certificate_image
+          ? `${baseUrl}${res.data.student_other_certificate_image}`
+          : noImageUrl,
+        student_certificate_image: res?.data?.student_certificate_image
+          ? `${baseUrl}${res.data.student_certificate_image}`
+          : noImageUrl,
+
+        student_youtube_image: res?.data?.student_youtube_image
+          ? `${baseUrl}${res.data.student_youtube_image}`
+          : noImageUrl,
+      });
+    } catch {
+      toast.error("Failed to load student data");
+    }
   };
 
-  if (isError) return <ApiErrorPage onRetry={refetch} />;
+  useEffect(() => {
+    if (!isEditMode) return;
+    fetchData();
+  }, [id]);
+
+  const validate = () => {
+    const err = {};
+    if (!data.student_uid) err.student_uid = "UID is required";
+    if (!data.student_name) err.student_name = "Name is required";
+    if (!data.student_sort) err.student_sort = "Sort Order is required";
+    if (!data.student_course) err.student_course = "Course is required";
+    if (!data.student_have_testimonial)
+      err.student_have_testimonial = "Testimonial is required";
+    if (!data.student_have_certificate)
+      err.student_have_certificate = "Certificate is required";
+    if (!data.student_have_youtube)
+      err.student_have_youtube = "Youtube is required";
+
+    if (!data.student_have_testimonial)
+      err.student_have_testimonial = "Testimonial is required";
+    if (!data.student_have_certificate)
+      err.student_have_certificate = "Have Certificate is required";
+    if (!data.student_have_youtube)
+      err.student_have_youtube = "Have YouTube is required";
+    if (!data.student_recent_passout)
+      err.student_recent_passout = "Have Passout is required";
+    if (!data.student_have_office_image)
+      err.student_have_office_image = "Office Image is required";
+
+    if (!preview.student_image && !data.student_image)
+      err.student_image = "Student image is required";
+    if (!data.student_image_alt)
+      err.student_image_alt = "Image alt is required";
+
+    if (data.student_sort && isNaN(Number(data.student_sort)))
+      err.student_sort = "Sort order must be a number";
+
+    if (data.student_have_testimonial === "Yes") {
+      if (!data.student_testimonial)
+        err.student_testimonial = "Testimonial is required";
+    }
+    if (!data.student_have_story)
+      err.student_have_story = "Have Story is required";
+    if (data.student_have_story === "Yes") {
+      if (!data.student_story_details)
+        err.student_story_details = "Success Story is required";
+      if (!data.student_story_date)
+        err.student_story_date = "Success Story Date is required";
+    }
+
+    if (data.student_have_office_image === "Yes") {
+      if (!preview.student_office_image && !data.student_office_image)
+        err.student_office_image = "Office Image is required";
+      if (!data.student_office_image_alt)
+        err.student_office_image_alt = "Office Image alt is required";
+    }
+    if (data.student_have_certificate === "Yes") {
+      if (!data.student_linkedin_link)
+        err.student_linkedin_link = "LinkedIn link is required";
+      if (!preview.student_certificate_image && !data.student_certificate_image)
+        err.student_certificate_image = "Certificate image is required";
+      if (!data.student_certificate_image_alt)
+        err.student_certificate_image_alt = "Certificate image alt is required";
+    }
+
+    if (data.student_have_youtube === "Yes") {
+      if (!data.student_youtube_link)
+        err.student_youtube_link = "YouTube link is required";
+      if (!preview.student_youtube_image && !data.student_youtube_image)
+        err.student_youtube_image = "YouTube image is required";
+      if (!data.student_youtube_image_alt)
+        err.student_youtube_image_alt = "YouTube image alt is required";
+    }
+
+    setErrors(err);
+    return Object.keys(err).length === 0;
+  };
+
+  const handleImageChange = (fieldName, file) => {
+    if (file) {
+      setData({ ...data, [fieldName]: file });
+      const url = URL.createObjectURL(file);
+      setPreview({ ...preview, [fieldName]: url });
+      setErrors({ ...errors, [fieldName]: "" });
+    }
+  };
+
+  const handleRemoveImage = (fieldName) => {
+    setData({ ...data, [fieldName]: null });
+    setPreview({ ...preview, [fieldName]: "" });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+    const formData = new FormData();
+    formData.append("student_uid", data.student_uid || "");
+    formData.append("student_sort", data.student_sort || "");
+    formData.append("student_name", data.student_name || "");
+    formData.append("student_course", data.student_course || "");
+    formData.append("student_designation", data.student_designation || "");
+    formData.append("student_country_id", data.student_country_id || "");
+    formData.append("student_company_id", data.student_company_id || "");
+    formData.append(
+      "student_certificate_issued_by",
+      data.student_certificate_issued_by || ""
+    );
+    formData.append(
+      "student_have_testimonial",
+      data.student_have_testimonial || ""
+    );
+    formData.append(
+      "student_have_certificate",
+      data.student_have_certificate || ""
+    );
+    formData.append(
+      "student_recent_passout",
+      data.student_recent_passout || ""
+    );
+    formData.append(
+      "student_have_office_image",
+      data.student_have_office_image || ""
+    );
+    formData.append("student_have_youtube", data.student_have_youtube || "");
+    formData.append("student_testimonial", data.student_testimonial || "");
+    formData.append("student_have_story", data.student_have_story || "");
+    formData.append("student_story_details", data.student_story_details || "");
+    formData.append("student_story_date", data.student_story_date || "");
+    formData.append("student_linkedin_link", data.student_linkedin_link || "");
+    formData.append("student_youtube_link", data.student_youtube_link || "");
+    formData.append("student_image_alt", data.student_image_alt || "");
+    formData.append("student_status", data.student_status || "");
+    formData.append(
+      "student_office_image_alt",
+      data.student_office_image_alt || ""
+    );
+    formData.append(
+      "student_other_certificate_image_alt",
+      data.student_other_certificate_image_alt || ""
+    );
+    formData.append(
+      "student_certificate_image_alt",
+      data.student_certificate_image_alt || ""
+    );
+    formData.append(
+      "student_youtube_image_alt",
+      data.student_youtube_image_alt || ""
+    );
+
+    if (data.student_image instanceof File)
+      formData.append("student_image", data.student_image);
+    if (data.student_office_image instanceof File)
+      formData.append("student_office_image", data.student_office_image);
+    if (data.student_other_certificate_image instanceof File)
+      formData.append(
+        "student_other_certificate_image",
+        data.student_other_certificate_image
+      );
+    if (data.student_certificate_image instanceof File)
+      formData.append(
+        "student_certificate_image",
+        data.student_certificate_image
+      );
+    if (data.student_youtube_image instanceof File)
+      formData.append("student_youtube_image", data.student_youtube_image);
+
+    try {
+      const res = await submitStudent({
+        url: isEditMode
+          ? `${STUDENT_API.updateById(id)}`
+          : `${STUDENT_API.list}`,
+        method: "post",
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (
+        (isEditMode && res?.code === 200) ||
+        (!isEditMode && res?.code === 201)
+      ) {
+        toast.success(res?.msg || "Saved successfully");
+        queryClient.invalidateQueries({ queryKey: ["student-list"] });
+        navigate("/student-list");
+      } else {
+        toast.error(res?.msg || "Failed to save student");
+      }
+    } catch (err) {
+      toast.error(err?.message || "Something went wrong");
+    }
+  };
+
+  if (fetchError) return <ApiErrorPage onRetry={() => fetchData()} />;
 
   return (
-    <>
-      {isLoading && <LoadingBar />}
-
-      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mb-8"
-          >
-            <h1 className="text-3xl font-bold text-gray-900">Newsletters</h1>
-            <p className="text-gray-600 mt-2">
-              Manage and view all newsletter subscribers
-            </p>
-          </motion.div>
-
-          {/* Search */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="mb-8"
-          >
-            <div className="relative max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+    <div className="mx-6 space-y-6">
+      {fetchLoading && <LoadingBar />}
+      <form onSubmit={handleSubmit}>
+        <PageHeader
+          icon={User}
+          title={isEditMode ? "Edit Student" : "Create Student"}
+          description="Fill in the student details below to register them"
+          rightContent={
+            <div className="flex justify-end gap-2 pt-4">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => navigate(-1)}
+              >
+                Back
+              </Button>
+              <Button type="submit" disabled={submitLoading}>
+                {isEditMode ? "Update Student" : "Create Student"}
+              </Button>
+            </div>
+          }
+        />
+        <Card className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3  lg:grid-cols-4  gap-7">
+            <div>
+              <label className="text-sm font-medium">UID *</label>
               <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search newsletters by email..."
-                className="pl-12"
+                type="number"
+                min={0}
+                value={data.student_uid}
+                onChange={(e) =>
+                  setData({ ...data, student_uid: e.target.value })
+                }
+              />
+              {errors.student_uid && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_uid}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Sort Order *</label>
+              <Input
+                type="number"
+                min={0}
+                value={data.student_sort}
+                onChange={(e) =>
+                  setData({ ...data, student_sort: e.target.value })
+                }
+              />
+              {errors.student_sort && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_sort}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Name *</label>
+              <Input
+                value={data.student_name}
+                onChange={(e) =>
+                  setData({ ...data, student_name: e.target.value })
+                }
+              />
+              {errors.student_name && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_name}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Course *</label>
+
+              <Select
+                value={data.student_course}
+                onValueChange={(v) => setData({ ...data, student_course: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Courses" />
+                </SelectTrigger>
+                <SelectContent>
+                  {coursesData?.data?.map((c, key) => (
+                    <SelectItem key={key} value={c.courses_name}>
+                      {c.courses_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.student_course && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_course}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+            <div>
+              <label className="text-sm font-medium">Designation</label>
+              <Input
+                value={data.student_designation}
+                onChange={(e) =>
+                  setData({ ...data, student_designation: e.target.value })
+                }
               />
             </div>
-          </motion.div>
 
-          {/* Content */}
-          {filteredNewsletters.length === 0 ? (
-            <div className="flex items-center justify-center h-64 bg-white rounded-xl border">
-              <div className="text-center">
-                <Mail className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-600 font-medium">
-                  No newsletters found
+            <div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-gray-700">
+                  Country - City
+                </label>
+
+                <button
+                  type="button"
+                  onClick={() => setCountryOpen(true)}
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700 transition"
+                >
+                  + Country
+                </button>
+              </div>
+              <Select
+                value={data.student_country_id?.toString() || ""}
+                onValueChange={(v) =>
+                  setData({ ...data, student_country_id: Number(v) })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Country - City" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countriesData?.data?.map((c) => (
+                    <SelectItem key={c.id} value={c.id.toString()}>
+                      {c.country_name}-{c.country_city}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.student_country_id && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_country_id}
                 </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {searchQuery ? "Try adjusting your search" : "No data yet"}
+              )}
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-gray-700">
+                  Company
+                </label>
+
+                <button
+                  type="button"
+                  onClick={() => setCompanyOpen(true)}
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700 transition"
+                >
+                  + Company
+                </button>
+              </div>
+
+              <Select
+                value={data.student_company_id?.toString() || ""}
+                onValueChange={(v) =>
+                  setData({ ...data, student_company_id: Number(v) })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Company" />
+                </SelectTrigger>
+                <SelectContent>
+                  {companiesData?.data?.map((c) => (
+                    <SelectItem key={c.id} value={c.id.toString()}>
+                      {c.student_company_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {errors.student_company_id && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_company_id}
                 </p>
+              )}
+            </div>
+            {data?.student_have_certificate == "Yes" && (
+              <div>
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-gray-700">
+                    Certificate Issued By
+                  </label>
+                </div>
+
+                <Select
+                  value={data.student_certificate_issued_by || ""}
+                  onValueChange={(v) =>
+                    setData({ ...data, student_certificate_issued_by: v })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Certificate Issued" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ACFE">ACFE</SelectItem>
+                    <SelectItem value="ACAMS">ACAMS</SelectItem>
+                    <SelectItem value="IIA">IIA</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+          <div className="flex gap-4 my-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium">Have Testimonial</label>
+
+              <GroupButton
+                className="w-fit"
+                value={data.student_have_testimonial}
+                onChange={(value) =>
+                  setData({ ...data, student_have_testimonial: value })
+                }
+                options={[
+                  { label: "Yes", value: "Yes" },
+                  { label: "No", value: "No" },
+                ]}
+              />
+              {errors.student_have_testimonial && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_have_testimonial}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium">Have Certificate</label>
+
+              <GroupButton
+                className="w-fit"
+                value={data.student_have_certificate}
+                onChange={(value) =>
+                  setData({ ...data, student_have_certificate: value })
+                }
+                options={[
+                  { label: "Yes", value: "Yes" },
+                  { label: "No", value: "No" },
+                ]}
+              />
+              {errors.student_have_certificate && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_have_certificate}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium">Have Youtube</label>
+
+              <GroupButton
+                className="w-fit"
+                value={data.student_have_youtube}
+                onChange={(value) =>
+                  setData({ ...data, student_have_youtube: value })
+                }
+                options={[
+                  { label: "Yes", value: "Yes" },
+                  { label: "No", value: "No" },
+                ]}
+              />
+              {errors.student_have_youtube && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_have_youtube}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium">Have Story</label>
+
+              <GroupButton
+                className="w-fit"
+                value={data.student_have_story}
+                onChange={(value) =>
+                  setData({ ...data, student_have_story: value })
+                }
+                options={[
+                  { label: "Yes", value: "Yes" },
+                  { label: "No", value: "No" },
+                ]}
+              />
+
+              {errors.student_have_story && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_have_story}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center h-full ml-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium">Recent Passout</label>
+
+                <GroupButton
+                  className="w-fit"
+                  value={data.student_recent_passout}
+                  onChange={(value) =>
+                    setData({ ...data, student_recent_passout: value })
+                  }
+                  options={[
+                    { label: "Yes", value: "Yes" },
+                    { label: "No", value: "No" },
+                  ]}
+                />
               </div>
             </div>
-          ) : (
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.1 },
-                },
-              }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-            >
-              {filteredNewsletters.map((item) => (
-                <motion.div
-                  key={item.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                  className="bg-white border rounded-xl p-4"
-                >
-                  <div className="flex justify-between mb-3">
-                    <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-1 rounded-full">
-                      #{item.id}
-                    </span>
-                    <div className="flex items-center gap-1 text-sm text-gray-600">
-                      <Calendar className="h-4 w-4" />
-                      {formatDate(item.newsletter_created)}
-                    </div>
-                  </div>
+            <div className="flex items-center h-full ml-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium">Have Office Image</label>
 
-                  <p className="text-sm font-medium text-gray-900 break-all">
-                    {item.newsletter_email}
-                  </p>
-                </motion.div>
-              ))}
-            </motion.div>
+                <GroupButton
+                  className="w-fit"
+                  value={data.student_have_office_image}
+                  onChange={(value) =>
+                    setData({ ...data, student_have_office_image: value })
+                  }
+                  options={[
+                    { label: "Yes", value: "Yes" },
+                    { label: "No", value: "No" },
+                  ]}
+                />
+              </div>
+            </div>
+          </div>
+          {isEditMode && (
+            <div className="flex items-center h-full ml-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium">Status *</label>
+
+                <GroupButton
+                  className="w-fit"
+                  value={data.student_status}
+                  onChange={(value) =>
+                    setData({ ...data, student_status: value })
+                  }
+                  options={[
+                    { label: "Active", value: "Active" },
+                    { label: "Inactive", value: "Inactive" },
+                  ]}
+                />
+              </div>
+            </div>
           )}
-        </div>
-      </div>
-    </>
+          {data.student_have_story == "Yes" && (
+            <div>
+              <label className="text-sm font-medium">
+                Success Story Date *
+              </label>
+              <Input
+                value={data.student_story_date}
+                type="date"
+                onChange={(e) =>
+                  setData({ ...data, student_story_date: e.target.value })
+                }
+              />
+              {errors.student_story_date && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_story_date}
+                </p>
+              )}
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4   gap-4">
+            <div className="col-span-2">
+              <ImageUpload
+                id="student_image"
+                label="Student Image"
+                required
+                selectedFile={data.student_image}
+                previewImage={preview.student_image}
+                onFileChange={(e) =>
+                  handleImageChange("student_image", e.target.files?.[0])
+                }
+                onRemove={() => handleRemoveImage("student_image")}
+                error={errors.student_image}
+                format="WEBP"
+                allowedExtensions={["webp"]}
+                dimensions="1080x1080"
+                maxSize={5}
+                requiredDimensions={[1080, 1080]}
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="text-sm font-medium">Student Image Alt *</label>
+              <Textarea
+                placeholder="Describe the student image"
+                value={data.student_image_alt}
+                onChange={(e) =>
+                  setData({ ...data, student_image_alt: e.target.value })
+                }
+                rows={4}
+              />
+              {errors.student_image_alt && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_image_alt}
+                </p>
+              )}
+            </div>
+            {data.student_have_office_image == "Yes" && (
+              <>
+                <div className="col-span-2">
+                  <ImageUpload
+                    id="student_office_image"
+                    label="Office Image *"
+                    selectedFile={data.student_office_image}
+                    previewImage={preview.student_office_image}
+                    onFileChange={(e) =>
+                      handleImageChange(
+                        "student_office_image",
+                        e.target.files?.[0]
+                      )
+                    }
+                    onRemove={() => handleRemoveImage("student_office_image")}
+                    error={errors.student_office_image}
+                    format="WEBP"
+                    allowedExtensions={["webp"]}
+                    dimensions="1080x1080"
+                    maxSize={5}
+                    requiredDimensions={[1080, 1080]}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">
+                    Office Image Alt *
+                  </label>
+                  <Textarea
+                    placeholder="Describe the office image"
+                    value={data.student_office_image_alt}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_office_image_alt: e.target.value,
+                      })
+                    }
+                    rows={4}
+                  />
+                  {errors.student_office_image_alt && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_office_image_alt}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+            {data?.student_have_testimonial === "Yes" && (
+              <div className="col-span-2">
+                <div className="py-2">
+                  <label className="text-sm font-medium block mb-2">
+                    Testimonial *
+                  </label>
+                  <Textarea
+                    placeholder="Enter testimonial"
+                    value={data.student_testimonial}
+                    onChange={(e) =>
+                      setData({ ...data, student_testimonial: e.target.value })
+                    }
+                    rows={4}
+                  />
+                  {errors.student_testimonial && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_testimonial}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {data?.student_have_certificate === "Yes" && (
+              <>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">LinkedIn Link *</label>
+                  <Textarea
+                    placeholder="Enter LinkedIn link"
+                    value={data.student_linkedin_link}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_linkedin_link: e.target.value,
+                      })
+                    }
+                    // className="h-16"
+                    rows={4}
+                  />
+                  {errors.student_linkedin_link && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_linkedin_link}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-2">
+                  <ImageUpload
+                    id="student_certificate_image"
+                    label="Certificate Image"
+                    required
+                    selectedFile={data.student_certificate_image}
+                    previewImage={preview.student_certificate_image}
+                    onFileChange={(e) =>
+                      handleImageChange(
+                        "student_certificate_image",
+                        e.target.files?.[0]
+                      )
+                    }
+                    onRemove={() =>
+                      handleRemoveImage("student_certificate_image")
+                    }
+                    error={errors.student_certificate_image}
+                    format="WEBP"
+                    allowedExtensions={["webp"]}
+                    dimensions="380*270"
+                    maxSize={5}
+                    requiredDimensions={[380, 270]}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">
+                    Certificate Image Alt *
+                  </label>
+                  <Textarea
+                    placeholder="Describe the certificate image"
+                    value={data.student_certificate_image_alt}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_certificate_image_alt: e.target.value,
+                      })
+                    }
+                    rows={4}
+                  />
+                  {errors.student_certificate_image_alt && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_certificate_image_alt}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-2">
+                  <ImageUpload
+                    id="student_other_certificate_image"
+                    label="Other Certificate Image"
+                    selectedFile={data.student_other_certificate_image}
+                    previewImage={preview.student_other_certificate_image}
+                    onFileChange={(e) =>
+                      handleImageChange(
+                        "student_other_certificate_image",
+                        e.target.files?.[0]
+                      )
+                    }
+                    onRemove={() =>
+                      handleRemoveImage("student_other_certificate_image")
+                    }
+                    format="WEBP"
+                    allowedExtensions={["webp"]}
+                    maxSize={5}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">
+                    Other Certificate Image Alt
+                  </label>
+                  <Textarea
+                    placeholder="Describe the certificate image"
+                    value={data.student_other_certificate_image_alt}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_other_certificate_image_alt: e.target.value,
+                      })
+                    }
+                    rows={4}
+                  />
+                </div>
+              </>
+            )}
+
+            {/* YouTube Section */}
+            {data?.student_have_youtube === "Yes" && (
+              <>
+                <div className="col-span-2">
+                  <ImageUpload
+                    id="student_youtube_image"
+                    label="YouTube Image"
+                    required
+                    selectedFile={data.student_youtube_image}
+                    previewImage={preview.student_youtube_image}
+                    onFileChange={(e) =>
+                      handleImageChange(
+                        "student_youtube_image",
+                        e.target.files?.[0]
+                      )
+                    }
+                    onRemove={() => handleRemoveImage("student_youtube_image")}
+                    error={errors.student_youtube_image}
+                    format="WEBP"
+                    dimensions="350*220"
+                    allowedExtensions={["webp"]}
+                    maxSize={5}
+                    requiredDimensions={[350, 220]}
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">
+                    YouTube Image Alt *
+                  </label>
+                  <Textarea
+                    placeholder="Describe the YouTube image"
+                    value={data.student_youtube_image_alt}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_youtube_image_alt: e.target.value,
+                      })
+                    }
+                    rows={4}
+                  />
+                  {errors.student_youtube_image_alt && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_youtube_image_alt}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">YouTube Link *</label>
+                  <Textarea
+                    placeholder="Enter YouTube link"
+                    value={data.student_youtube_link}
+                    onChange={(e) =>
+                      setData({ ...data, student_youtube_link: e.target.value })
+                    }
+                    rows={4}
+                  />
+                  {errors.student_youtube_link && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_youtube_link}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+            {data?.student_have_story === "Yes" && (
+              <div className="space-y-1 col-span-4">
+                <label className="text-sm font-medium">Success Story *</label>
+
+                <div
+                  className={
+                    errors.student_story_details ? "border border-red-500" : ""
+                  }
+                >
+                  <CKEditor
+                    initData={data.student_story_details || ""}
+                    config={{
+                      versionCheck: false,
+                      toolbar: [
+                        {
+                          name: "basicstyles",
+                          items: ["Bold", "Italic", "Underline", "Strike"],
+                        },
+                        {
+                          name: "paragraph",
+                          items: [
+                            "NumberedList",
+                            "BulletedList",
+                            "-",
+                            "Outdent",
+                            "Indent",
+                          ],
+                        },
+                        {
+                          name: "links",
+                          items: ["Link", "Unlink"],
+                        },
+                        {
+                          name: "insert",
+                          items: ["Image", "Table"],
+                        },
+                        {
+                          name: "styles",
+                          items: ["Styles", "Format", "Font", "FontSize"],
+                        },
+                        {
+                          name: "colors",
+                          items: ["TextColor", "BGColor"],
+                        },
+                        { name: "tools", items: ["Maximize"] },
+                      ],
+                      height: 200,
+                      removePlugins: "elementspath",
+                      resize_enabled: false,
+                    }}
+                    onChange={(event) => {
+                      const editorData = event.editor.getData();
+
+                      setData((prev) => ({
+                        ...prev,
+                        student_story_details: editorData,
+                      }));
+                    }}
+                  />
+                </div>
+                {errors.student_story_details && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.student_story_details}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </Card>
+      </form>
+      <CompanyDialog
+        open={openCompany}
+        onClose={() => setCompanyOpen(false)}
+        companyId={null}
+      />
+      <CountryForm
+        isOpen={openCountry}
+        onClose={() => setCountryOpen(false)}
+        countryId={null}
+      />
+    </div>
   );
 };
 
-export default NewsLetter;
+export default StudentForm;
+student_story_box_title1;
+student_story_box_details1;
+student_story_box_title2;
+student_story_box_details2;
+student_story_box_title3;
+student_story_box_details3;
+student_story_box_title4;
+student_story_box_details4;
+student_story_banner_image;
+student_story_banner_image_alt;

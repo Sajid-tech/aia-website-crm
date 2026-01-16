@@ -45,12 +45,23 @@ const initialState = {
   student_have_certificate: "No",
   student_have_youtube: "No",
   student_recent_passout: "No",
+  student_have_office_image: "No",
   student_have_story: "No",
   student_story_date: "",
   student_story_details: "",
   student_testimonial: "",
   student_linkedin_link: "",
   student_youtube_link: "",
+  student_story_box_title1: "",
+  student_story_box_details1: "",
+  student_story_box_title2: "",
+  student_story_box_details2: "",
+  student_story_box_title3: "",
+  student_story_box_details3: "",
+  student_story_box_title4: "",
+  student_story_box_details4: "",
+  student_story_banner_image: null,
+  student_story_banner_image_alt: "",
   student_image: null,
   student_image_alt: "",
   student_office_image: null,
@@ -134,6 +145,9 @@ const StudentForm = () => {
         student_youtube_image: res?.data?.student_youtube_image
           ? `${baseUrl}${res.data.student_youtube_image}`
           : noImageUrl,
+        student_story_banner_image: res?.data?.student_story_banner_image
+          ? `${baseUrl}${res.data.student_story_banner_image}`
+          : noImageUrl,
       });
     } catch {
       toast.error("Failed to load student data");
@@ -166,6 +180,8 @@ const StudentForm = () => {
       err.student_have_youtube = "Have YouTube is required";
     if (!data.student_recent_passout)
       err.student_recent_passout = "Have Passout is required";
+    if (!data.student_have_office_image)
+      err.student_have_office_image = "Office Image is required";
 
     if (!preview.student_image && !data.student_image)
       err.student_image = "Student image is required";
@@ -186,8 +202,38 @@ const StudentForm = () => {
         err.student_story_details = "Success Story is required";
       if (!data.student_story_date)
         err.student_story_date = "Success Story Date is required";
+      if (!data.student_story_box_title1)
+        err.student_story_box_title1 = "Box One Title  is required";
+      if (!data.student_story_box_details1)
+        err.student_story_box_details1 = "Box One Description is required";
+      if (!data.student_story_box_title2)
+        err.student_story_box_title2 = "Box Two Title is required";
+      if (!data.student_story_box_details2)
+        err.student_story_box_details2 = "Box Two Description is required";
+      if (!data.student_story_box_title3)
+        err.student_story_box_title3 = "Box Three Title is required";
+      if (!data.student_story_box_details3)
+        err.student_story_box_details3 = "Box Three Description is required";
+      if (!data.student_story_box_title4)
+        err.student_story_box_title4 = "Box Four Title is required";
+      if (!data.student_story_box_details4)
+        err.student_story_box_details4 = "Box Four Description is required";
+      if (
+        !preview.student_story_banner_image &&
+        !data.student_story_banner_image
+      )
+        err.student_story_banner_image = "Story Banner Image is required";
+      if (!data.student_story_banner_image_alt)
+        err.student_story_banner_image_alt =
+          "Story Banner Image alt is required";
     }
 
+    if (data.student_have_office_image === "Yes") {
+      if (!preview.student_office_image && !data.student_office_image)
+        err.student_office_image = "Office Image is required";
+      if (!data.student_office_image_alt)
+        err.student_office_image_alt = "Office Image alt is required";
+    }
     if (data.student_have_certificate === "Yes") {
       if (!data.student_linkedin_link)
         err.student_linkedin_link = "LinkedIn link is required";
@@ -251,6 +297,10 @@ const StudentForm = () => {
       "student_recent_passout",
       data.student_recent_passout || ""
     );
+    formData.append(
+      "student_have_office_image",
+      data.student_have_office_image || ""
+    );
     formData.append("student_have_youtube", data.student_have_youtube || "");
     formData.append("student_testimonial", data.student_testimonial || "");
     formData.append("student_have_story", data.student_have_story || "");
@@ -276,7 +326,49 @@ const StudentForm = () => {
       "student_youtube_image_alt",
       data.student_youtube_image_alt || ""
     );
+    formData.append(
+      "student_story_box_title1",
+      data.student_story_box_title1 || ""
+    );
+    formData.append(
+      "student_story_box_details1",
+      data.student_story_box_details1 || ""
+    );
+    formData.append(
+      "student_story_box_title2",
+      data.student_story_box_title2 || ""
+    );
+    formData.append(
+      "student_story_box_details2",
+      data.student_story_box_details2 || ""
+    );
+    formData.append(
+      "student_story_box_title3",
+      data.student_story_box_title3 || ""
+    );
+    formData.append(
+      "student_story_box_details3",
+      data.student_story_box_details3 || ""
+    );
+    formData.append(
+      "student_story_box_title4",
+      data.student_story_box_title4 || ""
+    );
+    formData.append(
+      "student_story_box_details4",
+      data.student_story_box_details4 || ""
+    );
 
+    if (data.student_story_banner_image instanceof File)
+      formData.append(
+        "student_story_banner_image",
+        data.student_story_banner_image
+      );
+
+    formData.append(
+      "student_story_banner_image_alt",
+      data.student_story_banner_image_alt || ""
+    );
     if (data.student_image instanceof File)
       formData.append("student_image", data.student_image);
     if (data.student_office_image instanceof File)
@@ -536,10 +628,9 @@ const StudentForm = () => {
               </div>
             )}
           </div>
-          {/* <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 my-4 gap-4"> */}
           <div className="flex gap-4 my-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium">Have Testimonial *</label>
+              <label className="text-sm font-medium">Have Testimonial</label>
 
               <GroupButton
                 className="w-fit"
@@ -559,7 +650,7 @@ const StudentForm = () => {
               )}
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium">Have Certificate *</label>
+              <label className="text-sm font-medium">Have Certificate</label>
 
               <GroupButton
                 className="w-fit"
@@ -579,7 +670,7 @@ const StudentForm = () => {
               )}
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium">Have Youtube *</label>
+              <label className="text-sm font-medium">Have Youtube</label>
 
               <GroupButton
                 className="w-fit"
@@ -599,7 +690,7 @@ const StudentForm = () => {
               )}
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium">Have Story *</label>
+              <label className="text-sm font-medium">Have Story</label>
 
               <GroupButton
                 className="w-fit"
@@ -619,49 +710,9 @@ const StudentForm = () => {
                 </p>
               )}
             </div>
-
-            {isEditMode && (
-              <div className="flex items-center h-full ml-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium">Status *</label>
-
-                  <GroupButton
-                    className="w-fit"
-                    value={data.student_status}
-                    onChange={(value) =>
-                      setData({ ...data, student_status: value })
-                    }
-                    options={[
-                      { label: "Active", value: "Active" },
-                      { label: "Inactive", value: "Inactive" },
-                    ]}
-                  />
-                </div>
-              </div>
-            )}
-            {data.student_have_story == "Yes" && (
-              <div>
-                <label className="text-sm font-medium">
-                  Success Story Date *
-                </label>
-                <Input
-                  value={data.student_story_date}
-                  type="date"
-                  onChange={(e) =>
-                    setData({ ...data, student_story_date: e.target.value })
-                  }
-                />
-                {errors.student_story_date && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.student_story_date}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-          {/* <div className="flex items-center h-full ml-4">
+            <div className="flex items-center h-full ml-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium">Recent Passout </label>
+                <label className="text-sm font-medium">Recent Passout</label>
 
                 <GroupButton
                   className="w-fit"
@@ -675,94 +726,109 @@ const StudentForm = () => {
                   ]}
                 />
               </div>
-            </div> */}
-          {/* </div> */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4   gap-4">
-            <div className="col-span-2">
-              <ImageUpload
-                id="student_image"
-                label="Student Image"
-                required
-                selectedFile={data.student_image}
-                previewImage={preview.student_image}
-                onFileChange={(e) =>
-                  handleImageChange("student_image", e.target.files?.[0])
-                }
-                onRemove={() => handleRemoveImage("student_image")}
-                error={errors.student_image}
-                format="WEBP"
-                allowedExtensions={["webp"]}
-                dimensions="1080x1080"
-                maxSize={5}
-                requiredDimensions={[1080, 1080]}
-              />
             </div>
-            <div className="col-span-2">
-              <label className="text-sm font-medium">Student Image Alt *</label>
-              <Textarea
-                placeholder="Describe the student image"
-                value={data.student_image_alt}
-                onChange={(e) =>
-                  setData({ ...data, student_image_alt: e.target.value })
-                }
-                rows={4}
-              />
-              {errors.student_image_alt && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.student_image_alt}
-                </p>
-              )}
-            </div>
-            <div className="col-span-2">
-              <ImageUpload
-                id="student_office_image"
-                label="Office Image"
-                selectedFile={data.student_office_image}
-                previewImage={preview.student_office_image}
-                onFileChange={(e) =>
-                  handleImageChange("student_office_image", e.target.files?.[0])
-                }
-                onRemove={() => handleRemoveImage("student_office_image")}
-                error={errors.student_office_image}
-                format="WEBP"
-                allowedExtensions={["webp"]}
-                dimensions="1080x1080"
-                maxSize={5}
-                requiredDimensions={[1080, 1080]}
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="text-sm font-medium">Office Image Alt</label>
-              <Textarea
-                placeholder="Describe the office image"
-                value={data.student_office_image_alt}
-                onChange={(e) =>
-                  setData({ ...data, student_office_image_alt: e.target.value })
-                }
-                rows={4}
-              />
-            </div>
+            <div className="flex items-center h-full ml-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium">Have Office Image</label>
 
-            {data?.student_have_testimonial === "Yes" && (
-              <div className="col-span-2">
-                <div className="py-2">
-                  <label className="text-sm font-medium block mb-2">
-                    Testimonial *
+                <GroupButton
+                  className="w-fit"
+                  value={data.student_have_office_image}
+                  onChange={(value) =>
+                    setData({ ...data, student_have_office_image: value })
+                  }
+                  options={[
+                    { label: "Yes", value: "Yes" },
+                    { label: "No", value: "No" },
+                  ]}
+                />
+              </div>
+            </div>
+          </div>
+          {isEditMode && (
+            <div className="flex items-center h-full ml-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium">Status *</label>
+
+                <GroupButton
+                  className="w-fit"
+                  value={data.student_status}
+                  onChange={(value) =>
+                    setData({ ...data, student_status: value })
+                  }
+                  options={[
+                    { label: "Active", value: "Active" },
+                    { label: "Inactive", value: "Inactive" },
+                  ]}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {(data.student_have_testimonial === "Yes" ||
+              data.student_have_certificate === "Yes" ||
+              data.student_recent_passout === "Yes" ||
+              data.student_have_story === "Yes") && (
+              <>
+                <div className="col-span-2">
+                  <ImageUpload
+                    id="student_image"
+                    label="Student Image"
+                    required
+                    selectedFile={data.student_image}
+                    previewImage={preview.student_image}
+                    onFileChange={(e) =>
+                      handleImageChange("student_image", e.target.files?.[0])
+                    }
+                    onRemove={() => handleRemoveImage("student_image")}
+                    error={errors.student_image}
+                    format="WEBP"
+                    allowedExtensions={["webp"]}
+                    dimensions="1080x1080"
+                    maxSize={5}
+                    requiredDimensions={[1080, 1080]}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">
+                    Student Image Alt *
                   </label>
                   <Textarea
-                    placeholder="Enter testimonial"
-                    value={data.student_testimonial}
+                    placeholder="Describe the student image"
+                    value={data.student_image_alt}
                     onChange={(e) =>
-                      setData({ ...data, student_testimonial: e.target.value })
+                      setData({ ...data, student_image_alt: e.target.value })
                     }
                     rows={4}
                   />
-                  {errors.student_testimonial && (
+                  {errors.student_image_alt && (
                     <p className="text-xs text-red-500 mt-1">
-                      {errors.student_testimonial}
+                      {errors.student_image_alt}
                     </p>
                   )}
                 </div>
+              </>
+            )}
+
+            {data?.student_have_testimonial === "Yes" && (
+              <div className="col-span-2">
+                <label className="text-sm font-medium block">
+                  Testimonial *
+                </label>
+                <Textarea
+                  placeholder="Enter testimonial"
+                  value={data.student_testimonial}
+                  onChange={(e) =>
+                    setData({ ...data, student_testimonial: e.target.value })
+                  }
+                  rows={4}
+                />
+                {errors.student_testimonial && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.student_testimonial}
+                  </p>
+                )}
               </div>
             )}
 
@@ -871,11 +937,11 @@ const StudentForm = () => {
                 </div>
               </>
             )}
-
-            {/* YouTube Section */}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
             {data?.student_have_youtube === "Yes" && (
               <>
-                <div className="col-span-2">
+                <div>
                   <ImageUpload
                     id="student_youtube_image"
                     label="YouTube Image"
@@ -898,7 +964,7 @@ const StudentForm = () => {
                   />
                 </div>
 
-                <div className="col-span-2">
+                <div>
                   <label className="text-sm font-medium">
                     YouTube Image Alt *
                   </label>
@@ -919,7 +985,7 @@ const StudentForm = () => {
                     </p>
                   )}
                 </div>
-                <div className="col-span-2">
+                <div>
                   <label className="text-sm font-medium">YouTube Link *</label>
                   <Textarea
                     placeholder="Enter YouTube link"
@@ -937,72 +1003,347 @@ const StudentForm = () => {
                 </div>
               </>
             )}
-            {data?.student_have_story === "Yes" && (
-              <div className="space-y-1 col-span-4">
-                <label className="text-sm font-medium">Success Story *</label>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
+            {data.student_have_story == "Yes" && (
+              <>
+                <div>
+                  <label className="text-sm font-medium">Box One Title *</label>
+                  <Input
+                    value={data.student_story_box_title1}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_story_box_title1: e.target.value,
+                      })
+                    }
+                  />
+                  {errors.student_story_box_title1 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_story_box_title1}
+                    </p>
+                  )}
+                </div>
 
-                <div
-                  className={
-                    errors.student_story_details ? "border border-red-500" : ""
-                  }
-                >
-                  <CKEditor
-                    initData={data.student_story_details || ""}
-                    config={{
-                      versionCheck: false,
-                      toolbar: [
-                        {
-                          name: "basicstyles",
-                          items: ["Bold", "Italic", "Underline", "Strike"],
-                        },
-                        {
-                          name: "paragraph",
-                          items: [
-                            "NumberedList",
-                            "BulletedList",
-                            "-",
-                            "Outdent",
-                            "Indent",
-                          ],
-                        },
-                        {
-                          name: "links",
-                          items: ["Link", "Unlink"],
-                        },
-                        {
-                          name: "insert",
-                          items: ["Image", "Table"],
-                        },
-                        {
-                          name: "styles",
-                          items: ["Styles", "Format", "Font", "FontSize"],
-                        },
-                        {
-                          name: "colors",
-                          items: ["TextColor", "BGColor"],
-                        },
-                        { name: "tools", items: ["Maximize"] },
-                      ],
-                      height: 200,
-                      removePlugins: "elementspath",
-                      resize_enabled: false,
-                    }}
-                    onChange={(event) => {
-                      const editorData = event.editor.getData();
+                <div>
+                  <label className="text-sm font-medium">Box Two Title *</label>
+                  <Input
+                    value={data.student_story_box_title2}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_story_box_title2: e.target.value,
+                      })
+                    }
+                  />
+                  {errors.student_story_box_title2 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_story_box_title2}
+                    </p>
+                  )}
+                </div>
 
-                      setData((prev) => ({
-                        ...prev,
-                        student_story_details: editorData,
-                      }));
-                    }}
+                <div>
+                  <label className="text-sm font-medium">
+                    Box Three Title *
+                  </label>
+                  <Input
+                    value={data.student_story_box_title3}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_story_box_title3: e.target.value,
+                      })
+                    }
+                  />
+                  {errors.student_story_box_title3 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_story_box_title3}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">
+                    Box Four Title *
+                  </label>
+                  <Input
+                    value={data.student_story_box_title4}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_story_box_title4: e.target.value,
+                      })
+                    }
+                  />
+                  {errors.student_story_box_title4 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_story_box_title4}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-sm font-medium">
+                    Box One Description *
+                  </label>
+                  <Textarea
+                    placeholder="Box One Description"
+                    value={data.student_story_box_details1}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_story_box_details1: e.target.value,
+                      })
+                    }
+                    rows={2}
+                  />
+                  {errors.student_story_box_details1 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_story_box_details1}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-sm font-medium">
+                    Box Two Description *
+                  </label>
+                  <Textarea
+                    placeholder="Box Two Description"
+                    value={data.student_story_box_details2}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_story_box_details2: e.target.value,
+                      })
+                    }
+                    rows={2}
+                  />
+                  {errors.student_story_box_details2 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_story_box_details2}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-sm font-medium">
+                    Box Three Description *
+                  </label>
+                  <Textarea
+                    placeholder="Box Three Description"
+                    value={data.student_story_box_details3}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_story_box_details3: e.target.value,
+                      })
+                    }
+                    rows={2}
+                  />
+                  {errors.student_story_box_details3 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_story_box_details3}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-sm font-medium">
+                    Box Four Description *
+                  </label>
+                  <Textarea
+                    placeholder="Box Four Description"
+                    value={data.student_story_box_details4}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_story_box_details4: e.target.value,
+                      })
+                    }
+                    rows={2}
+                  />
+                  {errors.student_story_box_details4 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_story_box_details4}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-sm font-medium">
+                    Success Story Date *
+                  </label>
+                  <Input
+                    value={data.student_story_date}
+                    type="date"
+                    onChange={(e) =>
+                      setData({ ...data, student_story_date: e.target.value })
+                    }
+                  />
+                  {errors.student_story_date && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_story_date}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-2">
+                  <ImageUpload
+                    id="student_story_banner_image"
+                    label="Story Banner Image"
+                    required
+                    selectedFile={data.student_story_banner_image}
+                    previewImage={preview.student_story_banner_image}
+                    onFileChange={(e) =>
+                      handleImageChange(
+                        "student_story_banner_image",
+                        e.target.files?.[0]
+                      )
+                    }
+                    onRemove={() =>
+                      handleRemoveImage("student_story_banner_image")
+                    }
+                    error={errors.student_story_banner_image}
+                    format="WEBP"
+                    allowedExtensions={["webp"]}
+                    dimensions="1080x1080"
+                    maxSize={5}
+                    requiredDimensions={[1080, 1080]}
                   />
                 </div>
-                {errors.student_story_details && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.student_story_details}
-                  </p>
-                )}
+                <div>
+                  <label className="text-sm font-medium">
+                    Story Banner Image Alt *
+                  </label>
+                  <Textarea
+                    placeholder="Story Banner Image Alt"
+                    value={data.student_story_banner_image_alt}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_story_banner_image_alt: e.target.value,
+                      })
+                    }
+                    rows={4}
+                  />
+                  {errors.student_story_banner_image_alt && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_story_banner_image_alt}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+          {data?.student_have_story === "Yes" && (
+            <div className="space-y-1 col-span-4 mb-3">
+              <label className="text-sm font-medium">Success Story *</label>
+
+              <div
+                className={
+                  errors.student_story_details ? "border border-red-500" : ""
+                }
+              >
+                <CKEditor
+                  initData={data.student_story_details || ""}
+                  config={{
+                    versionCheck: false,
+                    toolbar: [
+                      {
+                        name: "basicstyles",
+                        items: ["Bold", "Italic", "Underline", "Strike"],
+                      },
+                      {
+                        name: "paragraph",
+                        items: [
+                          "NumberedList",
+                          "BulletedList",
+                          "-",
+                          "Outdent",
+                          "Indent",
+                        ],
+                      },
+                      {
+                        name: "links",
+                        items: ["Link", "Unlink"],
+                      },
+                      {
+                        name: "insert",
+                        items: ["Image", "Table"],
+                      },
+                      {
+                        name: "styles",
+                        items: ["Styles", "Format", "Font", "FontSize"],
+                      },
+                      {
+                        name: "colors",
+                        items: ["TextColor", "BGColor"],
+                      },
+                      { name: "tools", items: ["Maximize"] },
+                    ],
+                    height: 200,
+                    removePlugins: "elementspath",
+                    resize_enabled: false,
+                  }}
+                  onChange={(event) => {
+                    const editorData = event.editor.getData();
+
+                    setData((prev) => ({
+                      ...prev,
+                      student_story_details: editorData,
+                    }));
+                  }}
+                />
               </div>
+              {errors.student_story_details && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.student_story_details}
+                </p>
+              )}
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {data.student_have_office_image == "Yes" && (
+              <>
+                <div>
+                  <ImageUpload
+                    id="student_office_image"
+                    label="Office Image *"
+                    selectedFile={data.student_office_image}
+                    previewImage={preview.student_office_image}
+                    onFileChange={(e) =>
+                      handleImageChange(
+                        "student_office_image",
+                        e.target.files?.[0]
+                      )
+                    }
+                    onRemove={() => handleRemoveImage("student_office_image")}
+                    error={errors.student_office_image}
+                    format="WEBP"
+                    allowedExtensions={["webp"]}
+                    dimensions="1080x1080"
+                    maxSize={5}
+                    requiredDimensions={[1080, 1080]}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">
+                    Office Image Alt *
+                  </label>
+                  <Textarea
+                    placeholder="Describe the office image"
+                    value={data.student_office_image_alt}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_office_image_alt: e.target.value,
+                      })
+                    }
+                    rows={4}
+                  />
+                  {errors.student_office_image_alt && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_office_image_alt}
+                    </p>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </Card>

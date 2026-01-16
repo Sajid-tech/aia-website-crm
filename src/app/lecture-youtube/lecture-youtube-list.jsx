@@ -44,6 +44,8 @@ const LetureYoutubeList = () => {
     { header: "Page", accessorKey: "page_one_name" },
     { header: "Sort", accessorKey: "youtube_sort" },
     { header: "Course", accessorKey: "youtube_course" },
+    { header: "Title", accessorKey: "youtube_title" },
+
     {
       header: "Status",
       accessorKey: "youtube_status",

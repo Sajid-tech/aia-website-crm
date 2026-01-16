@@ -34,6 +34,7 @@ const initialState = {
   youtube_sort: "",
   youtube_course: "",
   youtube_language: "",
+  youtube_title: "",
   youtube_link: "",
   youtube_image: null,
   youtube_image_alt: "",
@@ -124,6 +125,7 @@ const LectureYoutubeForm = () => {
     formData.append("youtube_sort", data.youtube_sort);
     formData.append("youtube_course", data.youtube_course);
     formData.append("youtube_language", data.youtube_language);
+    formData.append("youtube_title", data.youtube_title);
     formData.append("youtube_link", data.youtube_link);
     formData.append("youtube_image_alt", data.youtube_image_alt);
     formData.append("youtube_status", data.youtube_status);
@@ -272,6 +274,16 @@ const LectureYoutubeForm = () => {
                 }
               />
             </div>
+            <div className="col-span-2">
+              <label className="text-sm font-medium">Title</label>
+              <Input
+                className="mt-1"
+                value={data.youtube_title}
+                onChange={(e) =>
+                  setData({ ...data, youtube_title: e.target.value })
+                }
+              />
+            </div>
 
             <div className="md:col-span-2">
               <label className="text-sm font-medium">YouTube Link *</label>
@@ -288,21 +300,7 @@ const LectureYoutubeForm = () => {
                 </p>
               )}
             </div>
-            <div className="md:col-span-2">
-              <label className="text-sm font-medium">Image Alt *</label>
-              <Textarea
-                className="mt-1"
-                value={data.youtube_image_alt}
-                onChange={(e) =>
-                  setData({ ...data, youtube_image_alt: e.target.value })
-                }
-              />
-              {errors.youtube_image_alt && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.youtube_image_alt}
-                </p>
-              )}
-            </div>
+
             <div className="md:col-span-2">
               <ImageUpload
                 id="youtube_image"
@@ -322,7 +320,21 @@ const LectureYoutubeForm = () => {
                 requiredDimensions={[600, 300]}
               />
             </div>
-
+            <div className="md:col-span-2">
+              <label className="text-sm font-medium">Image Alt *</label>
+              <Textarea
+                className="mt-1"
+                value={data.youtube_image_alt}
+                onChange={(e) =>
+                  setData({ ...data, youtube_image_alt: e.target.value })
+                }
+              />
+              {errors.youtube_image_alt && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.youtube_image_alt}
+                </p>
+              )}
+            </div>
             {isEditMode && (
               <div className="flex items-center h-full ml-4">
                 <div className="flex flex-col gap-1.5">
