@@ -183,15 +183,14 @@ const StudentForm = () => {
     if (!data.student_have_office_image)
       err.student_have_office_image = "Office Image is required";
 
-    if (!preview.student_image && !data.student_image)
-      err.student_image = "Student image is required";
-    if (!data.student_image_alt)
-      err.student_image_alt = "Image alt is required";
-
     if (data.student_sort && isNaN(Number(data.student_sort)))
       err.student_sort = "Sort order must be a number";
 
     if (data.student_have_testimonial === "Yes") {
+      if (!preview.student_image && !data.student_image)
+        err.student_image = "Student image is required";
+      if (!data.student_image_alt)
+        err.student_image_alt = "Image alt is required";
       if (!data.student_testimonial)
         err.student_testimonial = "Testimonial is required";
     }
@@ -251,7 +250,7 @@ const StudentForm = () => {
       if (!data.student_youtube_image_alt)
         err.student_youtube_image_alt = "YouTube image alt is required";
     }
-
+    console.log(err, "err");
     setErrors(err);
     return Object.keys(err).length === 0;
   };
@@ -283,23 +282,23 @@ const StudentForm = () => {
     formData.append("student_company_id", data.student_company_id || "");
     formData.append(
       "student_certificate_issued_by",
-      data.student_certificate_issued_by || ""
+      data.student_certificate_issued_by || "",
     );
     formData.append(
       "student_have_testimonial",
-      data.student_have_testimonial || ""
+      data.student_have_testimonial || "",
     );
     formData.append(
       "student_have_certificate",
-      data.student_have_certificate || ""
+      data.student_have_certificate || "",
     );
     formData.append(
       "student_recent_passout",
-      data.student_recent_passout || ""
+      data.student_recent_passout || "",
     );
     formData.append(
       "student_have_office_image",
-      data.student_have_office_image || ""
+      data.student_have_office_image || "",
     );
     formData.append("student_have_youtube", data.student_have_youtube || "");
     formData.append("student_testimonial", data.student_testimonial || "");
@@ -312,62 +311,62 @@ const StudentForm = () => {
     formData.append("student_status", data.student_status || "");
     formData.append(
       "student_office_image_alt",
-      data.student_office_image_alt || ""
+      data.student_office_image_alt || "",
     );
     formData.append(
       "student_other_certificate_image_alt",
-      data.student_other_certificate_image_alt || ""
+      data.student_other_certificate_image_alt || "",
     );
     formData.append(
       "student_certificate_image_alt",
-      data.student_certificate_image_alt || ""
+      data.student_certificate_image_alt || "",
     );
     formData.append(
       "student_youtube_image_alt",
-      data.student_youtube_image_alt || ""
+      data.student_youtube_image_alt || "",
     );
     formData.append(
       "student_story_box_title1",
-      data.student_story_box_title1 || ""
+      data.student_story_box_title1 || "",
     );
     formData.append(
       "student_story_box_details1",
-      data.student_story_box_details1 || ""
+      data.student_story_box_details1 || "",
     );
     formData.append(
       "student_story_box_title2",
-      data.student_story_box_title2 || ""
+      data.student_story_box_title2 || "",
     );
     formData.append(
       "student_story_box_details2",
-      data.student_story_box_details2 || ""
+      data.student_story_box_details2 || "",
     );
     formData.append(
       "student_story_box_title3",
-      data.student_story_box_title3 || ""
+      data.student_story_box_title3 || "",
     );
     formData.append(
       "student_story_box_details3",
-      data.student_story_box_details3 || ""
+      data.student_story_box_details3 || "",
     );
     formData.append(
       "student_story_box_title4",
-      data.student_story_box_title4 || ""
+      data.student_story_box_title4 || "",
     );
     formData.append(
       "student_story_box_details4",
-      data.student_story_box_details4 || ""
+      data.student_story_box_details4 || "",
     );
 
     if (data.student_story_banner_image instanceof File)
       formData.append(
         "student_story_banner_image",
-        data.student_story_banner_image
+        data.student_story_banner_image,
       );
 
     formData.append(
       "student_story_banner_image_alt",
-      data.student_story_banner_image_alt || ""
+      data.student_story_banner_image_alt || "",
     );
     if (data.student_image instanceof File)
       formData.append("student_image", data.student_image);
@@ -376,12 +375,12 @@ const StudentForm = () => {
     if (data.student_other_certificate_image instanceof File)
       formData.append(
         "student_other_certificate_image",
-        data.student_other_certificate_image
+        data.student_other_certificate_image,
       );
     if (data.student_certificate_image instanceof File)
       formData.append(
         "student_certificate_image",
-        data.student_certificate_image
+        data.student_certificate_image,
       );
     if (data.student_youtube_image instanceof File)
       formData.append("student_youtube_image", data.student_youtube_image);
@@ -864,7 +863,7 @@ const StudentForm = () => {
                     onFileChange={(e) =>
                       handleImageChange(
                         "student_certificate_image",
-                        e.target.files?.[0]
+                        e.target.files?.[0],
                       )
                     }
                     onRemove={() =>
@@ -908,7 +907,7 @@ const StudentForm = () => {
                     onFileChange={(e) =>
                       handleImageChange(
                         "student_other_certificate_image",
-                        e.target.files?.[0]
+                        e.target.files?.[0],
                       )
                     }
                     onRemove={() =>
@@ -951,7 +950,7 @@ const StudentForm = () => {
                     onFileChange={(e) =>
                       handleImageChange(
                         "student_youtube_image",
-                        e.target.files?.[0]
+                        e.target.files?.[0],
                       )
                     }
                     onRemove={() => handleRemoveImage("student_youtube_image")}
@@ -1193,7 +1192,7 @@ const StudentForm = () => {
                     onFileChange={(e) =>
                       handleImageChange(
                         "student_story_banner_image",
-                        e.target.files?.[0]
+                        e.target.files?.[0],
                       )
                     }
                     onRemove={() =>
@@ -1310,7 +1309,7 @@ const StudentForm = () => {
                     onFileChange={(e) =>
                       handleImageChange(
                         "student_office_image",
-                        e.target.files?.[0]
+                        e.target.files?.[0],
                       )
                     }
                     onRemove={() => handleRemoveImage("student_office_image")}
