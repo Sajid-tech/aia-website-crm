@@ -61,7 +61,6 @@ const SessionTimeoutTracker = ({ expiryTime, onLogout }) => {
             onLogout();
           }
         } catch (error) {
-          // Ignore JSON parsing errors
         }
       }
 

@@ -17,7 +17,6 @@ createRoot(document.getElementById("root")).render(
     <StrictMode>
       <BrowserRouter
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-        // basename="/admin"
       >
         <PersistGate loading={null} persistor={persistor}>
           <QueryClientProvider client={queryClient}>

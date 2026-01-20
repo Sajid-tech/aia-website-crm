@@ -219,17 +219,6 @@ const USER_ROLE_PERMISSIONS = {
     navMainReport: ["SUMMARY", "DOWNLOADS", "OTHER", "SETTINGS"],
   },
 
-  // 5: {
-  //   navMain: ["DASHBOARD", "CHAPTER"],
-  //   navMainReport: [
-  //     "SETTINGS",
-  //     "RECEIPT_ZERO",
-  //     "RECEIPT_CHANGE_DONOR",
-  //     "RECEIPT_MULTIPLE",
-  //     "FOLDER",
-  //     "MULTIALLOTMENT",
-  //   ],
-  // },
 };
 
 const LIMITED_MASTER_SETTINGS = {

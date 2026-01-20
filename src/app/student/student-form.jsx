@@ -855,7 +855,6 @@ const StudentForm = () => {
                       student_linkedin_link: e.target.value,
                     })
                   }
-                  // className="h-16"
                   rows={4}
                 />
                 {errors.student_linkedin_link && (

@@ -1,4 +1,3 @@
-// File: components/ui/MemoizedSelect.jsx
 import React from "react";
 import ReactSelect from "react-select";
 
@@ -16,42 +15,35 @@ export const MemoizedSelect = React.memo(
     ...props
   }) => {
     const selectOptions = options.map((option) => {
-      // Handle different object structures
       if (option?.label && option?.value !== undefined) {
         return {
           value: option.value,
           label: option.label,
-          ...option, // Keep all original properties
+          ...option, 
         };
       }
-      // Fallback for simple arrays or strings
       return {
         value: option.value || option,
         label: option.label || option,
       };
     });
 
-    // Handle both single and multi-select
     const selectedOption = isMulti
       ? Array.isArray(value)
         ? value.map((v) => {
-            // Handle if value is an object (with value property) or just the value itself
             const valueToFind = v?.value !== undefined ? v.value : v;
             const found = selectOptions.find(
               (opt) => opt.value === valueToFind
             );
-            // If not found in options, return the object as is
             return found || v;
           })
         : []
       : value && value !== "" && value !== null
       ? (() => {
-          // Handle if value is an object (with value property) or just the value itself
           const valueToFind = value?.value !== undefined ? value.value : value;
           const found = selectOptions.find(
             (option) => option.value === valueToFind
           );
-          // If not found in options, return the object as is
           return found || value;
         })()
       : null;

@@ -30,26 +30,10 @@ export function NavUser({ user }) {
     .join("")
     .toUpperCase();
 
-  // 🔹 Watch for sidebar state changes in localStorage
-  // useEffect(() => {
-  //   const handleStorageChange = () => {
-  //     setSidebarOpen(localStorage.getItem("sidebar:state") == "true");
-  //   };
-
-  //   window.addEventListener("storage", handleStorageChange);
-  //   const interval = setInterval(handleStorageChange, 500);
-
-  //   return () => {
-  //     window.removeEventListener("storage", handleStorageChange);
-  //     clearInterval(interval);
-  //   };
-  // }, []);
-
-  // -------------------------- upgrade start -------------------
+  
   const showUpdateBadge = useSelector(
     (state) => state.version?.showUpdateDialog
   );
-  // const showUpdateBadge = true;
   const [openDialog, setOpenDialog] = useState(false);
   const [showDot, setShowDot] = useState(false);
   const verCon = useSelector((state) => state.version.version);

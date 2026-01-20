@@ -38,7 +38,6 @@ const ImageUpload = ({
       return;
     }
 
-    // Check file size in MB
     const fileSizeInMB = file.size / (1024 * 1024);
     if (fileSizeInMB > maxSize) {
       const errorMsg = `File size exceeds ${maxSize}MB limit. Your file is ${fileSizeInMB.toFixed(

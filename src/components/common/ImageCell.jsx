@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 const ImageCell = ({
   src,
@@ -8,7 +8,16 @@ const ImageCell = ({
   height = 20,
   className = "",
 }) => {
-  const [imgSrc, setImgSrc] = useState(src || fallback);
+  const cacheBustedSrc = useMemo(() => {
+    if (!src) return fallback;
+    return `${src}${src.includes("?") ? "&" : "?"}t=${Date.now()}`;
+  }, [src, fallback]);
+
+  const [imgSrc, setImgSrc] = useState(cacheBustedSrc);
+
+  useEffect(() => {
+    setImgSrc(cacheBustedSrc);
+  }, [cacheBustedSrc]);
 
   return (
     <img
@@ -18,7 +27,7 @@ const ImageCell = ({
       width={width}
       height={height}
       onError={() => setImgSrc(fallback)}
-      className={`object-cover rounded border ${className}`}
+      className={`object-cover rounded border block ${className}`}
     />
   );
 };
