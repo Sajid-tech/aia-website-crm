@@ -201,7 +201,6 @@ const StudentForm = () => {
 
     if (
       data.student_have_testimonial === "Yes" ||
-      data.student_is_top == "Yes" ||
       data.student_have_map === "Yes"
     ) {
       if (!preview.student_image && !data.student_image)
@@ -851,8 +850,8 @@ const StudentForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {(data.student_have_testimonial === "Yes" ||
               data.student_recent_passout === "Yes" ||
-              data.student_have_map === "Yes" ||
-              data.student_is_top === "Yes") && (
+              data.student_have_map === "Yes" 
+            ) && (
               <>
                 <div className="col-span-2">
                   <ImageUpload
@@ -1468,7 +1467,7 @@ const StudentForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {data?.student_is_top === "Yes" && (
               <>
-                <div>
+                {/* <div>
                   <label className="text-sm font-medium block">
                     Student Marks
                   </label>
@@ -1480,7 +1479,7 @@ const StudentForm = () => {
                     }
                     rows={4}
                   />
-                </div>
+                </div> */}
 
                 <div>
                   <ImageUpload
