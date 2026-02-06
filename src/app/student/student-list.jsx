@@ -87,6 +87,26 @@ const StudentList = ({ enable }) => {
           },
         ]
       : []),
+    ...(enable == "top"
+      ? [
+          {
+            header: "Marks Image",
+            accessorKey: "student_marks_image",
+            cell: ({ row }) => {
+              const fileName = row.original.student_marks_image;
+              if (!fileName) return "-";
+              return (
+                <ImageCell
+                  src={`${studentBaseUrl}${fileName}`}
+                  fallback={noImageUrl}
+                  alt="Marks Image"
+                />
+              );
+            },
+            enableSorting: false,
+          },
+        ]
+      : []),
     ...(enable == "youtube"
       ? [
           {
@@ -173,6 +193,7 @@ const StudentList = ({ enable }) => {
     ...(enable != "youtube"
       ? [{ header: "Sort", enableSorting: true, accessorKey: "student_sort" }]
       : []),
+    { header: "UID", accessorKey: "student_uid" },
     { header: "Name", accessorKey: "student_name" },
     { header: "Course", accessorKey: "student_course", enableSorting: false },
     {

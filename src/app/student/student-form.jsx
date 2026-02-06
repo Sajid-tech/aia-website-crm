@@ -51,6 +51,8 @@ const initialState = {
   student_is_top: "No",
   student_have_story: "No",
   student_marks: "",
+  student_marks_image: "",
+  student_marks_image_alt: "",
   student_story_date: "",
   student_story_details: "",
   student_testimonial: "",
@@ -146,6 +148,9 @@ const StudentForm = () => {
         student_certificate_image: res?.data?.student_certificate_image
           ? `${baseUrl}${res.data.student_certificate_image}`
           : noImageUrl,
+        student_marks_image: res?.data?.student_marks_image
+          ? `${baseUrl}${res.data.student_marks_image}`
+          : noImageUrl,
 
         student_youtube_image: res?.data?.student_youtube_image
           ? `${baseUrl}${res.data.student_youtube_image}`
@@ -204,9 +209,12 @@ const StudentForm = () => {
       if (!data.student_image_alt)
         err.student_image_alt = "Image alt is required";
     }
-    // if (data.student_is_top == "Yes") {
-    //   if (!data.student_marks) err.student_marks = "Student Marks is required";
-    // }
+    if (data.student_is_top == "Yes") {
+      if (!preview.student_marks_image && !data.student_marks_image)
+        err.student_marks_image = "Mark  Image is required";
+      if (!data.student_marks_image_alt)
+        err.student_marks_image_alt = "Mark Image Alt is required";
+    }
     if (data.student_have_testimonial === "Yes") {
       if (!data.student_testimonial)
         err.student_testimonial = "Testimonial is required";
@@ -302,7 +310,7 @@ const StudentForm = () => {
     if (!validate()) return;
     const formData = new FormData();
     formData.append("student_uid", data.student_uid || "");
-    formData.append("student_sort", data.student_sort || "");
+    formData.append("student_sort", data?.student_sort || "");
     formData.append("student_youtube_sort", data.student_youtube_sort || "");
     formData.append("student_name", data.student_name || "");
     formData.append("student_course", data.student_course || "");
@@ -338,6 +346,12 @@ const StudentForm = () => {
       data.student_testimonial_link || "",
     );
     formData.append("student_marks", data.student_marks || "");
+    formData.append(
+      "student_marks_image_alt",
+      data.student_marks_image_alt || "",
+    );
+    if (data.student_marks_image instanceof File)
+      formData.append("student_marks_image", data.student_marks_image);
     formData.append("student_have_story", data.student_have_story || "");
     formData.append("student_story_details", data.student_story_details || "");
     formData.append("student_story_date", data.student_story_date || "");
@@ -663,7 +677,7 @@ const StudentForm = () => {
               </div>
             )}
           </div>
-          <div className="grid grid-cols-6 gap-2 my-4">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-2 my-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium">Have Testimonial</label>
 
@@ -1453,24 +1467,64 @@ const StudentForm = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {data?.student_is_top === "Yes" && (
-              <div>
-                <label className="text-sm font-medium block">
-                  Student Marks 
-                </label>
-                <Textarea
-                  placeholder="Example: 91,44,55,67"
-                  value={data.student_marks}
-                  onChange={(e) =>
-                    setData({ ...data, student_marks: e.target.value })
-                  }
-                  rows={4}
-                />
-                {/* {errors.student_marks && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.student_marks}
-                  </p>
-                )} */}
-              </div>
+              <>
+                <div>
+                  <label className="text-sm font-medium block">
+                    Student Marks
+                  </label>
+                  <Textarea
+                    placeholder="Example: 91,44,55,67"
+                    value={data.student_marks}
+                    onChange={(e) =>
+                      setData({ ...data, student_marks: e.target.value })
+                    }
+                    rows={4}
+                  />
+                </div>
+
+                <div>
+                  <ImageUpload
+                    id="student_marks_image"
+                    label="Mark Image *"
+                    selectedFile={data.student_marks_image}
+                    previewImage={preview.student_marks_image}
+                    onFileChange={(e) =>
+                      handleImageChange(
+                        "student_marks_image",
+                        e.target.files?.[0],
+                      )
+                    }
+                    onRemove={() => handleRemoveImage("student_marks_image")}
+                    error={errors.student_marks_image}
+                    format="WEBP"
+                    allowedExtensions={["webp"]}
+                    dimensions="1200x1500"
+                    maxSize={5}
+                    requiredDimensions={[1200, 1500]}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">
+                    Mark Image Alt *
+                  </label>
+                  <Textarea
+                    placeholder="Describe the office image"
+                    value={data.student_marks_image_alt}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_marks_image_alt: e.target.value,
+                      })
+                    }
+                    rows={4}
+                  />
+                  {errors.student_marks_image_alt && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_marks_image_alt}
+                    </p>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </Card>
