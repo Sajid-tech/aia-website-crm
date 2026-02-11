@@ -419,15 +419,15 @@ const CreateBlog = () => {
     blogSubs.forEach((sub, index) => {
       formDataObj.append(
         `sub[${index}][blog_sub_heading]`,
-        sub.blog_sub_heading
+        sub.blog_sub_heading,
       );
       formDataObj.append(
         `sub[${index}][blog_sub_heading_tag]`,
-        sub.blog_sub_heading_tag
+        sub.blog_sub_heading_tag,
       );
       formDataObj.append(
         `sub[${index}][blog_sub_description]`,
-        sub.blog_sub_description
+        sub.blog_sub_description,
       );
     });
 
@@ -437,7 +437,7 @@ const CreateBlog = () => {
           f.faq_sort?.toString().trim() ||
           f.faq_heading?.trim() ||
           f.faq_que?.trim() ||
-          f.faq_ans?.trim()
+          f.faq_ans?.trim(),
       )
       .forEach((f, index) => {
         formDataObj.append(`faq[${index}][faq_sort]`, f.faq_sort ?? "");
@@ -756,6 +756,7 @@ const CreateBlog = () => {
                                 {c.courses_name}
                               </SelectItem>
                             ))}
+                            <SelectItem value="Other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                         {errors.blog_course && (
@@ -939,7 +940,7 @@ const CreateBlog = () => {
                                   handleSubInputChange(
                                     index,
                                     "blog_sub_heading",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 className={
@@ -962,7 +963,7 @@ const CreateBlog = () => {
                                   handleSubInputChange(
                                     index,
                                     "blog_sub_heading_tag",
-                                    value
+                                    value,
                                   )
                                 }
                               >
@@ -1058,7 +1059,7 @@ const CreateBlog = () => {
                                   handleSubInputChange(
                                     index,
                                     "blog_sub_description",
-                                    data
+                                    data,
                                   );
                                 }}
                               />
@@ -1088,7 +1089,7 @@ const CreateBlog = () => {
                       value={selectedGalleryImage?.value}
                       onValueChange={(value) => {
                         const option = galleryOptions.find(
-                          (opt) => opt.value === value
+                          (opt) => opt.value === value,
                         );
                         handleGalleryImageSelect(option);
                       }}
@@ -1302,7 +1303,7 @@ const CreateBlog = () => {
                           <span>
                             {formData.blog_created
                               ? moment(formData.blog_created).format(
-                                  "DD MMM YYYY"
+                                  "DD MMM YYYY",
                                 )
                               : "Date not set"}
                           </span>
@@ -1382,8 +1383,8 @@ const CreateBlog = () => {
                         imageDimensions.height === 628
                           ? "bg-green-50"
                           : selectedFile
-                          ? "bg-yellow-50"
-                          : "bg-gray-50"
+                            ? "bg-yellow-50"
+                            : "bg-gray-50"
                       }`}
                     >
                       <p className="text-2xl font-bold text-gray-900">
@@ -1391,8 +1392,8 @@ const CreateBlog = () => {
                         imageDimensions.height === 628
                           ? "✓"
                           : selectedFile
-                          ? "⚠"
-                          : "-"}
+                            ? "⚠"
+                            : "-"}
                       </p>
                       <p className="text-xs text-gray-500">Size</p>
                     </div>

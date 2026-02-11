@@ -258,12 +258,12 @@ const EditBlog = () => {
   useEffect(() => {
     if (blogData?.data?.web_blog_relateds?.length && blogOptions.length > 0) {
       const relatedIds = blogData.data.web_blog_relateds.map(
-        (rel) => rel.blog_related_id
+        (rel) => rel.blog_related_id,
       );
       setExistingRelatedIds(relatedIds);
 
       const selected = blogOptions.filter((blog) =>
-        relatedIds.includes(blog.value)
+        relatedIds.includes(blog.value),
       );
       setSelectedRelatedBlogs(selected);
     }
@@ -401,11 +401,11 @@ const EditBlog = () => {
           const updatedSubs = blogSubs.filter((_, i) => i !== deleteItem.index);
           setBlogSubs(updatedSubs);
           const updatedErrors = subErrors.filter(
-            (_, i) => i !== deleteItem.index
+            (_, i) => i !== deleteItem.index,
           );
           setSubErrors(updatedErrors);
           const updatedIds = existingSubIds.filter(
-            (subId) => subId !== deleteItem.id
+            (subId) => subId !== deleteItem.id,
           );
           setExistingSubIds(updatedIds);
         } else {
@@ -421,16 +421,16 @@ const EditBlog = () => {
           toast.success(res?.msg || "Related blog removed successfully");
 
           const updatedRelated = selectedRelatedBlogs.filter(
-            (_, i) => i !== deleteItem.index
+            (_, i) => i !== deleteItem.index,
           );
           setSelectedRelatedBlogs(updatedRelated);
 
           const relationToRemove = blogData?.data?.web_blog_relateds?.find(
-            (rel) => rel.id === deleteItem.id
+            (rel) => rel.id === deleteItem.id,
           );
           if (relationToRemove) {
             const updatedIds = existingRelatedIds.filter(
-              (relId) => relId !== relationToRemove.blog_related_id
+              (relId) => relId !== relationToRemove.blog_related_id,
             );
             setExistingRelatedIds(updatedIds);
           }
@@ -603,15 +603,15 @@ const EditBlog = () => {
       }
       formDataObj.append(
         `sub[${index}][blog_sub_heading]`,
-        sub.blog_sub_heading
+        sub.blog_sub_heading,
       );
       formDataObj.append(
         `sub[${index}][blog_sub_heading_tag]`,
-        sub.blog_sub_heading_tag
+        sub.blog_sub_heading_tag,
       );
       formDataObj.append(
         `sub[${index}][blog_sub_description]`,
-        sub.blog_sub_description
+        sub.blog_sub_description,
       );
     });
 
@@ -621,7 +621,7 @@ const EditBlog = () => {
           f.faq_sort?.toString().trim() ||
           f.faq_heading?.trim() ||
           f.faq_que?.trim() ||
-          f.faq_ans?.trim()
+          f.faq_ans?.trim(),
       )
       .forEach((f, index) => {
         formDataObj.append(`faq[${index}][id]`, f.id ?? "");
@@ -707,11 +707,11 @@ const EditBlog = () => {
       // Reset related blogs only after blogOptions is populated
       if (blogOptions.length > 0 && data.web_blog_relateds?.length) {
         const relatedIds = data.web_blog_relateds.map(
-          (rel) => rel.blog_related_id
+          (rel) => rel.blog_related_id,
         );
         setExistingRelatedIds(relatedIds);
         const selected = blogOptions.filter((blog) =>
-          relatedIds.includes(blog.value)
+          relatedIds.includes(blog.value),
         );
         setSelectedRelatedBlogs(selected);
       } else {
@@ -1004,6 +1004,7 @@ const EditBlog = () => {
                                 {c.courses_name}
                               </SelectItem>
                             ))}
+                            <SelectItem value="Other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                         {errors.blog_course && (
@@ -1224,7 +1225,7 @@ const EditBlog = () => {
                                   handleSubInputChange(
                                     index,
                                     "blog_sub_heading",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 className={
@@ -1247,7 +1248,7 @@ const EditBlog = () => {
                                   handleSubInputChange(
                                     index,
                                     "blog_sub_heading_tag",
-                                    value
+                                    value,
                                   )
                                 }
                               >
@@ -1342,7 +1343,7 @@ const EditBlog = () => {
                                   handleSubInputChange(
                                     index,
                                     "blog_sub_description",
-                                    data
+                                    data,
                                   );
                                 }}
                               />
@@ -1373,7 +1374,7 @@ const EditBlog = () => {
                       value={selectedGalleryImage?.value}
                       onValueChange={(value) => {
                         const option = galleryOptions.find(
-                          (opt) => opt.value === value
+                          (opt) => opt.value === value,
                         );
                         handleGalleryImageSelect(option);
                       }}
@@ -1453,7 +1454,7 @@ const EditBlog = () => {
                                       Slug: {blog.slug}
                                     </p>
                                     {existingRelatedIds.includes(
-                                      blog.value
+                                      blog.value,
                                     ) && (
                                       <Badge
                                         variant="outline"
@@ -1482,7 +1483,8 @@ const EditBlog = () => {
                                         const relation =
                                           blogData?.data?.web_blog_relateds?.find(
                                             (rel) =>
-                                              rel.blog_related_id === blog.value
+                                              rel.blog_related_id ===
+                                              blog.value,
                                           );
                                         if (relation) {
                                           setDeleteItem({
@@ -1619,7 +1621,7 @@ const EditBlog = () => {
                           <Calendar className="h-3 w-3" />
                           {formData.blog_created
                             ? moment(formData.blog_created).format(
-                                "DD MMM YYYY"
+                                "DD MMM YYYY",
                               )
                             : "Date not set"}{" "}
                         </div>
@@ -1725,8 +1727,8 @@ const EditBlog = () => {
                         imageDimensions.height === 628
                           ? "bg-green-50"
                           : previewImage
-                          ? "bg-yellow-50"
-                          : "bg-gray-50"
+                            ? "bg-yellow-50"
+                            : "bg-gray-50"
                       }`}
                     >
                       <p className="text-2xl font-bold text-gray-900">
@@ -1734,8 +1736,8 @@ const EditBlog = () => {
                         imageDimensions.height === 628
                           ? "✓"
                           : previewImage
-                          ? "⚠"
-                          : "-"}
+                            ? "⚠"
+                            : "-"}
                       </p>
                       <p className="text-xs text-gray-500">Size</p>
                     </div>

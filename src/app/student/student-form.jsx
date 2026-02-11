@@ -279,9 +279,19 @@ const StudentForm = () => {
     if (data.student_recent_passout === "Yes") {
       if (!preview.student_image && !data.student_image)
         err.student_image = "Student image is required";
-      if (!data.student_image_alt)
-        err.student_image_alt = "Image alt is required";
+      if (!preview.student_image && !data.student_image)
+        err.student_image = "Student image is required";
+
+      if (!preview.student_country_id && !data.student_country_id)
+        err.student_country_id = "Country is required";
+      if (!data.student_company_id)
+        err.student_company_id = "Company is required";
     }
+    if (data.student_have_map == "Yes") {
+      if (!data.student_country_id)
+        err.student_country_id = "Country is required";
+    }
+
     if (data.student_have_youtube == "No") {
       if (!data.student_sort) err.student_sort = "Sort Order is required";
     }
@@ -576,7 +586,11 @@ const StudentForm = () => {
             <div>
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-gray-700">
-                  Country - City
+                  Country - City{" "}
+                  {data?.student_recent_passout == "Yes" ||
+                  data?.student_have_map == "Yes"
+                    ? "*"
+                    : ""}
                 </label>
 
                 <button
@@ -614,7 +628,7 @@ const StudentForm = () => {
             <div>
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-gray-700">
-                  Company
+                  Company {data?.student_recent_passout == "Yes" ? "*" : ""}
                 </label>
 
                 <button
@@ -850,8 +864,7 @@ const StudentForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {(data.student_have_testimonial === "Yes" ||
               data.student_recent_passout === "Yes" ||
-              data.student_have_map === "Yes" 
-            ) && (
+              data.student_have_map === "Yes") && (
               <>
                 <div className="col-span-2">
                   <ImageUpload
