@@ -16,6 +16,7 @@ import { useGetApiMutation } from "@/hooks/useGetApiMutation";
 import {
   COURSE_API,
   LETUREYOUTUBE_API,
+  LETUREYOUTUBEPLAYLIST_API,
   YOUTUBEFOR_API,
 } from "@/constants/apiConstants";
 import { getImageBaseUrl, getNoImageUrl } from "@/utils/imageUtils";
@@ -36,6 +37,7 @@ const initialState = {
   youtube_language: "",
   youtube_title: "",
   youtube_link: "",
+  youtube_playlist_id: "",
   youtube_image: null,
   youtube_image_alt: "",
   youtube_status: "Active",
@@ -54,7 +56,6 @@ const LectureYoutubeForm = () => {
   const queryClient = useQueryClient();
   const { trigger: fetchVideo, loading, error: videoError } = useApiMutation();
   const { trigger: submitVideo, loading: submitLoading } = useApiMutation();
-
   const {
     data: youtubeForData,
     loading: youtubeForLoading,
@@ -63,6 +64,10 @@ const LectureYoutubeForm = () => {
   } = useGetApiMutation({
     url: YOUTUBEFOR_API.list,
     queryKey: ["youtubeFor"],
+  });
+  const { data: playListData } = useGetApiMutation({
+    url: LETUREYOUTUBEPLAYLIST_API.activelist,
+    queryKey: ["activeplaytlist-dropdown"],
   });
   const { data: coursesData } = useGetApiMutation({
     url: COURSE_API.courses,
@@ -78,7 +83,6 @@ const LectureYoutubeForm = () => {
         ...res.data,
         youtube_image: null,
       });
-      console.log(res?.dat, "res?.data?.image_url");
       const imageBaseUrl = getImageBaseUrl(res?.image_url, IMAGE_FOR);
       const noImageUrl = getNoImageUrl(res?.image_url);
       const imagepath = res?.data?.youtube_image
@@ -125,6 +129,7 @@ const LectureYoutubeForm = () => {
     formData.append("youtube_sort", data.youtube_sort ?? "");
     formData.append("youtube_course", data.youtube_course ?? "");
     formData.append("youtube_language", data.youtube_language ?? "");
+    formData.append("youtube_playlist_id", data.youtube_playlist_id ?? "");
     formData.append("youtube_title", data.youtube_title ?? "");
     formData.append("youtube_link", data.youtube_link ?? "");
     formData.append("youtube_image_alt", data.youtube_image_alt ?? "");
@@ -263,8 +268,35 @@ const LectureYoutubeForm = () => {
                 </SelectContent>
               </Select>
             </div>
-
             <div>
+              <label className="text-sm font-medium">PlayList</label>
+              <Select
+                value={data.youtube_playlist_id}
+                onValueChange={(value) => {
+                  const selected = playListData?.data?.find(
+                    (item) => String(item.id) == String(value),
+                  );
+                  setData((prev) => ({
+                    ...prev,
+                    youtube_playlist_id: selected?.id,
+                    youtube_language: selected?.youtube_playlist_name || "",
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select PlayList" />
+                </SelectTrigger>
+                <SelectContent>
+                  {playListData?.data?.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.youtube_playlist_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* <div>
               <label className="text-sm font-medium">Language/PlayList</label>
               <Input
                 className="mt-1"
@@ -273,7 +305,7 @@ const LectureYoutubeForm = () => {
                   setData({ ...data, youtube_language: e.target.value })
                 }
               />
-            </div>
+            </div> */}
             <div className="col-span-2">
               <label className="text-sm font-medium">Title</label>
               <Input

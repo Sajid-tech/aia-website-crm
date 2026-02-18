@@ -77,6 +77,11 @@ export const LETUREYOUTUBE_API = {
   updateById: (id) => `/lecture-youtube/${id}?_method=POST`,
   updateById: (id) => `/lecture-youtube/${id}?_method=PUT`,
 };
+export const LETUREYOUTUBEPLAYLIST_API = {
+  list: "/lecture-youtube-playlist",
+  byId: (id) => `/lecture-youtube-playlist/${id}`,
+  activelist:"/lecture-youtube-playlists"
+};
 
 export const COURSE_API = {
   courses: "/courses",

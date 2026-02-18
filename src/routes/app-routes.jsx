@@ -33,6 +33,8 @@ import { Route, Routes } from "react-router-dom";
 import EditBlog from "../app/blog/edit-blog";
 import AuthRoute from "./auth-route";
 import ProtectedRoute from "./protected-route";
+import StudenScreenShot from "@/app/student/student-screenshot";
+import LetureYoutubePlayList from "@/app/leture-youtube-playlist/lecture-youtubeplaylist-list";
 
 function AppRoutes() {
   return (
@@ -65,6 +67,14 @@ function AppRoutes() {
             element={
               <Suspense fallback={<LoadingBar />}>
                 <CountryList />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/youtube-playlist"
+            element={
+              <Suspense fallback={<LoadingBar />}>
+                <LetureYoutubePlayList />
               </Suspense>
             }
           />
@@ -137,6 +147,22 @@ function AppRoutes() {
             element={
               <Suspense fallback={<LoadingBar />}>
                 <StudentMap />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/student-top"
+            element={
+              <Suspense fallback={<LoadingBar />}>
+                <StudenTop />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/student-screenshot"
+            element={
+              <Suspense fallback={<LoadingBar />}>
+                <StudenScreenShot />
               </Suspense>
             }
           />

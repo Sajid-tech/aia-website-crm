@@ -107,6 +107,26 @@ const StudentList = ({ enable }) => {
           },
         ]
       : []),
+    ...(enable == "screenshot"
+      ? [
+          {
+            header: "Image",
+            accessorKey: "student_screenshot_image",
+            cell: ({ row }) => {
+              const fileName = row.original.student_screenshot_image;
+              if (!fileName) return "-";
+              return (
+                <ImageCell
+                  src={`${studentBaseUrl}${fileName}`}
+                  fallback={noImageUrl}
+                  alt="ScreenShot Image"
+                />
+              );
+            },
+            enableSorting: false,
+          },
+        ]
+      : []),
     ...(enable == "youtube"
       ? [
           {
@@ -371,6 +391,28 @@ const StudentList = ({ enable }) => {
                   }`}
                 >
                   {row.original.student_is_top}
+                </span>
+              );
+            },
+          },
+        ]
+      : []),
+    ...(enable == "screenshot"
+      ? [
+          {
+            header: "ScreenShot",
+            accessorKey: "student_have_screenshot",
+            cell: ({ row }) => {
+              const isActive = row.original.student_have_screenshot == "Yes";
+              return (
+                <span
+                  className={`px-3 py-1 text-xs font-medium rounded-full inline-block ${
+                    isActive
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {row.original.student_have_screenshot ?? "No Value"}
                 </span>
               );
             },

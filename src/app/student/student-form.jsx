@@ -49,7 +49,9 @@ const initialState = {
   student_have_office_image: "No",
   student_have_map: "No",
   student_is_top: "No",
+  student_have_screenshot: "No",
   student_have_story: "No",
+  student_story_short_description: "",
   student_marks: "",
   student_marks_image: "",
   student_marks_image_alt: "",
@@ -80,6 +82,8 @@ const initialState = {
   student_youtube_image: null,
   student_status: "Active",
   student_youtube_image_alt: "",
+  student_screenshot_image: "",
+  student_screenshot_image_alt: "",
 };
 
 const StudentForm = () => {
@@ -158,6 +162,9 @@ const StudentForm = () => {
         student_story_banner_image: res?.data?.student_story_banner_image
           ? `${baseUrl}${res.data.student_story_banner_image}`
           : noImageUrl,
+        student_screenshot_image: res?.data?.student_screenshot_image
+          ? `${baseUrl}${res.data.student_screenshot_image}`
+          : noImageUrl,
       });
     } catch {
       toast.error("Failed to load student data");
@@ -195,6 +202,8 @@ const StudentForm = () => {
     if (!data.student_have_map)
       err.student_have_map = "Student Have  Map is required";
     if (!data.student_is_top) err.student_is_top = "Student Top is required";
+    if (!data.student_have_screenshot)
+      err.student_have_screenshot = "ScreenShot is required";
 
     if (data.student_sort && isNaN(Number(data.student_sort)))
       err.student_sort = "Sort order must be a number";
@@ -213,6 +222,12 @@ const StudentForm = () => {
         err.student_marks_image = "Mark  Image is required";
       if (!data.student_marks_image_alt)
         err.student_marks_image_alt = "Mark Image Alt is required";
+    }
+    if (data.student_have_screenshot == "Yes") {
+      if (!preview.student_screenshot_image && !data.student_screenshot_image)
+        err.student_screenshot_image = "ScreenShot  Image is required";
+      if (!data.student_screenshot_image_alt)
+        err.student_screenshot_image_alt = "ScreenShot Image Alt is required";
     }
     if (data.student_have_testimonial === "Yes") {
       if (!data.student_testimonial)
@@ -249,6 +264,8 @@ const StudentForm = () => {
       if (!data.student_story_banner_image_alt)
         err.student_story_banner_image_alt =
           "Story Banner Image alt is required";
+      if (!data.student_story_short_description)
+        err.student_story_short_description = "Short Description is required";
     }
 
     if (data.student_have_office_image === "Yes") {
@@ -362,6 +379,10 @@ const StudentForm = () => {
     if (data.student_marks_image instanceof File)
       formData.append("student_marks_image", data.student_marks_image);
     formData.append("student_have_story", data.student_have_story || "");
+    formData.append(
+      "student_story_short_description",
+      data.student_story_short_description || "",
+    );
     formData.append("student_story_details", data.student_story_details || "");
     formData.append("student_story_date", data.student_story_date || "");
     formData.append("student_linkedin_link", data.student_linkedin_link || "");
@@ -416,7 +437,21 @@ const StudentForm = () => {
       "student_story_box_details4",
       data.student_story_box_details4 || "",
     );
+    formData.append(
+      "student_have_screenshot",
+      data.student_have_screenshot || "",
+    );
 
+    if (data.student_screenshot_image instanceof File)
+      formData.append(
+        "student_screenshot_image",
+        data.student_screenshot_image,
+      );
+
+    formData.append(
+      "student_screenshot_image_alt",
+      data.student_screenshot_image_alt || "",
+    );
     if (data.student_story_banner_image instanceof File)
       formData.append(
         "student_story_banner_image",
@@ -832,6 +867,23 @@ const StudentForm = () => {
                   value={data.student_is_top}
                   onChange={(value) =>
                     setData({ ...data, student_is_top: value })
+                  }
+                  options={[
+                    { label: "Yes", value: "Yes" },
+                    { label: "No", value: "No" },
+                  ]}
+                />
+              </div>
+            </div>
+            <div className="flex items-center h-full ml-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium">Have ScreenShot</label>
+
+                <GroupButton
+                  className="w-fit"
+                  value={data.student_have_screenshot}
+                  onChange={(value) =>
+                    setData({ ...data, student_have_screenshot: value })
                   }
                   options={[
                     { label: "Yes", value: "Yes" },
@@ -1363,70 +1415,92 @@ const StudentForm = () => {
             )}
           </div>
           {data?.student_have_story === "Yes" && (
-            <div className="space-y-1 col-span-4 mb-3">
-              <label className="text-sm font-medium">Success Story *</label>
-
-              <div
-                className={
-                  errors.student_story_details ? "border border-red-500" : ""
-                }
-              >
-                <CKEditor
-                  initData={data.student_story_details || ""}
-                  config={{
-                    versionCheck: false,
-                    toolbar: [
-                      {
-                        name: "basicstyles",
-                        items: ["Bold", "Italic", "Underline", "Strike"],
-                      },
-                      {
-                        name: "paragraph",
-                        items: [
-                          "NumberedList",
-                          "BulletedList",
-                          "-",
-                          "Outdent",
-                          "Indent",
-                        ],
-                      },
-                      {
-                        name: "links",
-                        items: ["Link", "Unlink"],
-                      },
-                      {
-                        name: "insert",
-                        items: ["Image", "Table"],
-                      },
-                      {
-                        name: "styles",
-                        items: ["Styles", "Format", "Font", "FontSize"],
-                      },
-                      {
-                        name: "colors",
-                        items: ["TextColor", "BGColor"],
-                      },
-                      { name: "tools", items: ["Maximize"] },
-                    ],
-                    height: 200,
-                    removePlugins: "elementspath",
-                    resize_enabled: false,
-                  }}
-                  onChange={(event) => {
-                    const editorData = event.editor.getData();
-
-                    setData((prev) => ({
-                      ...prev,
-                      student_story_details: editorData,
-                    }));
-                  }}
+            <div className="space-y-3 col-span-4 mb-3">
+              <div>
+                <label className="text-sm font-medium">
+                  Short Description *
+                </label>
+                <Textarea
+                  placeholder="Short Description"
+                  value={data.student_story_short_description}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      student_story_short_description: e.target.value,
+                    })
+                  }
+                  rows={4}
                 />
+                {errors.student_story_short_description && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.student_story_short_description}
+                  </p>
+                )}
               </div>
-              {errors.student_story_details && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.student_story_details}
-                </p>
-              )}
+              <div>
+                <label className="text-sm font-medium">Success Story *</label>
+                <div
+                  className={
+                    errors.student_story_details ? "border border-red-500" : ""
+                  }
+                >
+                  <CKEditor
+                    initData={data.student_story_details || ""}
+                    config={{
+                      versionCheck: false,
+                      toolbar: [
+                        {
+                          name: "basicstyles",
+                          items: ["Bold", "Italic", "Underline", "Strike"],
+                        },
+                        {
+                          name: "paragraph",
+                          items: [
+                            "NumberedList",
+                            "BulletedList",
+                            "-",
+                            "Outdent",
+                            "Indent",
+                          ],
+                        },
+                        {
+                          name: "links",
+                          items: ["Link", "Unlink"],
+                        },
+                        {
+                          name: "insert",
+                          items: ["Image", "Table"],
+                        },
+                        {
+                          name: "styles",
+                          items: ["Styles", "Format", "Font", "FontSize"],
+                        },
+                        {
+                          name: "colors",
+                          items: ["TextColor", "BGColor"],
+                        },
+                        { name: "tools", items: ["Maximize"] },
+                      ],
+                      height: 200,
+                      removePlugins: "elementspath",
+                      resize_enabled: false,
+                    }}
+                    onChange={(event) => {
+                      const editorData = event.editor.getData();
+
+                      setData((prev) => ({
+                        ...prev,
+                        student_story_details: editorData,
+                      }));
+                    }}
+                  />
+                </div>
+                {errors.student_story_details && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.student_story_details}
+                  </p>
+                )}
+              </div>
             </div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1533,6 +1607,56 @@ const StudentForm = () => {
                   {errors.student_marks_image_alt && (
                     <p className="text-xs text-red-500 mt-1">
                       {errors.student_marks_image_alt}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {data?.student_have_screenshot === "Yes" && (
+              <>
+                <div>
+                  <ImageUpload
+                    id="student_screenshot_image"
+                    label="Student ScreenShot *"
+                    selectedFile={data.student_screenshot_image}
+                    previewImage={preview.student_screenshot_image}
+                    onFileChange={(e) =>
+                      handleImageChange(
+                        "student_screenshot_image",
+                        e.target.files?.[0],
+                      )
+                    }
+                    onRemove={() =>
+                      handleRemoveImage("student_screenshot_image")
+                    }
+                    error={errors.student_screenshot_image}
+                    format="WEBP"
+                    allowedExtensions={["webp"]}
+                    // dimensions="1200x1500"
+                    maxSize={5}
+                    // requiredDimensions={[1200, 1500]}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">
+                    Student ScreenShot Image Alt *
+                  </label>
+                  <Textarea
+                    placeholder="Describe the ScreenShot Image Alt"
+                    value={data.student_screenshot_image_alt}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        student_screenshot_image_alt: e.target.value,
+                      })
+                    }
+                    rows={4}
+                  />
+                  {errors.student_screenshot_image_alt && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.student_screenshot_image_alt}
                     </p>
                   )}
                 </div>
